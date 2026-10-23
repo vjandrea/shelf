@@ -6,6 +6,14 @@ All notable changes to Shelf are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Shelf starts to speak Italian, starting with the page shell.** The 
+  navigation, sign-in, first-run setup and the Account dialog are translated. 
+  Each user picks a language under Account → Profile → Language; the default, 
+  Automatic, follows the browser, so an Italian browser gets Italian with no 
+  setup. The feature pages are still in English and follow in later releases.
+
 ## [0.73.0] - 2026-10-25
 
 Shelf could tell you which volumes of a series you were missing, but not that a

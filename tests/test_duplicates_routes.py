@@ -33,7 +33,8 @@ class TestPage:
 
         html = admin_client.get("/duplicates").text
         assert html.count('<script src="/static/js/duplicates.js" defer></script>') == 1
-        assert not re.findall(r"<script(?![^>]*\bsrc=)[^>]*>", html)
+        # A JSON data block (the i18n catalog) is not executable, so CSP allows it.
+        assert not re.findall(r"<script(?![^>]*\b(?:src=|type=\"application/json\"))[^>]*>", html)
 
     def test_admin_sees_both_lists(self, admin_client, db):
         a = _insert_item(db, title="Dune", isbn="0441013597")

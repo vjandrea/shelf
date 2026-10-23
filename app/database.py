@@ -365,6 +365,8 @@ MIGRATIONS: Sequence[tuple[int, str, str]] = (
         SELECT 'feature.release_radar', '0'
         WHERE EXISTS (SELECT 1 FROM settings
                       WHERE key = 'feature.hardcover' AND value = '0')"""),
+    # The UI language this user picked; NULL follows the browser (app/i18n.py).
+    (52, "Add users language", "ALTER TABLE users ADD COLUMN language TEXT"),
 )
 
 MIGRATION_TABLES = """
@@ -510,6 +512,7 @@ CREATE TABLE IF NOT EXISTS users (
     display_name   TEXT,
     role           TEXT NOT NULL DEFAULT 'viewer' CHECK(role IN ('admin','editor','viewer')),
     token_version  INTEGER NOT NULL DEFAULT 1,
+    language       TEXT,
     created_at     TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at     TEXT NOT NULL DEFAULT (datetime('now'))
 );
