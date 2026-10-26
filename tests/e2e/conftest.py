@@ -219,6 +219,9 @@ def _boot_server(
         # The server outlives the price-alert loop's first five-minute sleep; a
         # test that saved an ISBNdb key beside a wishlisted ISBN would call it live.
         "SHELF_DISABLE_PRICE_ALERTS": "1",
+        # Likewise the release-radar loop: a test that saved a Hardcover token
+        # beside a watched series would otherwise call Hardcover live.
+        "SHELF_DISABLE_RELEASE_RADAR": "1",
         # The UPC Item DB stub, in the *fixed* block rather than in `env_extra`:
         # every E2E server gets it with no test opting in, and `clear_env`
         # cannot remove it. `env_extra` is applied after, so a test that wants

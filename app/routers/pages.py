@@ -19,6 +19,7 @@ from app.services import isbn as isbn_svc
 from app.services import upc as upc_svc
 from app.services import tags as tags_svc
 from app.services import price_alerts
+from app.services import release_radar
 from app.services import wrapups
 from app.database import get_db, get_setting, get_game_platforms, get_reading_history
 from app.routers import items_common
@@ -769,6 +770,8 @@ async def settings(request: Request, _=Depends(require_role("admin"))):
     abs_url_present = bool(settings.get("abs_url")) or "abs_url" in env_overrides
     price_alert_last_run_display = price_alerts.describe_last_run(
         settings.get("price_alert_last_run"), settings.get("price_alert_last_summary"))
+    release_radar_last_run_display = release_radar.describe_last_run(
+        settings.get("release_radar_last_run"), settings.get("release_radar_last_summary"))
     for k in SENSITIVE_KEYS:
         if k in settings:
             settings[k] = ""
@@ -790,5 +793,8 @@ async def settings(request: Request, _=Depends(require_role("admin"))):
          "price_alert_default_threshold": price_alerts.DEFAULT_THRESHOLD_PCT,
          "price_alert_max_threshold": price_alerts.MAX_THRESHOLD_PCT,
          "price_alert_default_cap": price_alerts.DEFAULT_NIGHTLY_CAP,
-         "price_alert_max_cap": price_alerts.MAX_NIGHTLY_CAP},
+         "price_alert_max_cap": price_alerts.MAX_NIGHTLY_CAP,
+         "release_radar_last_run_display": release_radar_last_run_display,
+         "release_radar_default_cap": release_radar.DEFAULT_CAP,
+         "release_radar_max_cap": release_radar.MAX_CAP},
     )

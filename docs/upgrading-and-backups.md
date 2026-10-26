@@ -32,6 +32,23 @@ Release notes for every version are in the
 
 ### After upgrading to X.Y.Z
 
+**Two tables are added on first start.** `release_watches` and
+`upcoming_releases` hold the series you watch for new volumes and the
+announcements found for them. There is nothing to do.
+
+**Release radar starts the way Hardcover stands.** If Hardcover is turned off
+under Settings → **Features**, the upgrade turns the new Release radar feature
+off too, so the install does not start spending its Hardcover token. Otherwise
+it is on, but nothing is checked until you watch a series. See
+[Series → Watching for new volumes](user-guide/series.md#watching-for-new-volumes).
+
+**Watches are in a database backup, not in a portable archive.** Copying
+`data/` or downloading a Settings backup keeps them. A portable archive leaves
+them out, so a new install restored from an archive starts with no watches;
+**Watch all complete series** on the Series page puts them back in one click.
+
+### After upgrading to 0.71.0
+
 **Two tables and a column are added on first start.** `audit_sessions` and
 `audit_entries` hold [audits](user-guide/audits.md); each copy gains a
 *missing since* mark, empty until an audit sets it. There is nothing to do.

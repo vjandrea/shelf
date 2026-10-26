@@ -13,7 +13,7 @@ Each flag is one `settings` row, `feature.<key>`. Only the exact value "0"
 disables a feature: an absent row (every upgraded install) or any other value
 means enabled, so an upgrade changes nothing until an admin turns something
 off. Flags are rows only; no env var overrides them. A new install writes all
-sixteen rows explicitly, from the profile chosen at setup; an upgraded
+seventeen rows explicitly, from the profile chosen at setup; an upgraded
 install has none, and reads as Everything.
 
 `nav.py` imports this module, never the reverse at module level.
@@ -255,7 +255,14 @@ FEATURES: dict[str, Feature] = {
         job="hardcover_sync",
         entry_path="/discover",
         modules=("app.routers.hardcover",),
-        routes=(("GET", "/discover"),),
+        routes=(
+            ("GET", "/discover"),
+            # The release radar spends the token, so its routes need Hardcover on too.
+            ("POST", "/api/series/{name:path}/watch"),
+            ("POST", "/api/series/watch-all"),
+            ("GET", "/upcoming"),
+            ("POST", "/api/upcoming/{release_id}/dismiss"),
+        ),
         configured=_hardcover_configured,
         client=("hardcoverPush",),
         ungated={
@@ -319,6 +326,19 @@ FEATURES: dict[str, Feature] = {
             ("GET", "/api/audits/summary"): _AUDIT_STRIP,
             ("POST", "/api/audits/{audit_id}/finish"): _AUDIT_STRIP,
         },
+    ),
+    "release_radar": Feature(
+        label="Release radar",
+        description="Watch series for newly announced volumes and send a daily digest.",
+        profile="everything",
+        job="release_radar",
+        entry_path="/upcoming",
+        modules=("app.routers.upcoming",),
+        routes=(
+            ("POST", "/api/series/{name:path}/watch"),
+            ("POST", "/api/series/watch-all"),
+        ),
+        configured=_hardcover_configured,
     ),
 }
 

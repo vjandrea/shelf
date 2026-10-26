@@ -59,7 +59,7 @@ from app.currency import CURRENCIES, format_money, get_currency
 from app.features import feature_enabled
 from app.services.national import SEARCH_LANGS
 from app.database import init_db, get_db
-from app.routers import pages, items, item_copies, items_covers, cover_review, cover_review_actions, items_csv, items_catalog, locations, location_order, platforms, settings, sync, checkouts, valuation, hardcover, store, series, share, tags, intake, archive, shelf_fill, romm, komga, periodicals, music, related_media, trash, labels, audits, duplicates
+from app.routers import pages, items, item_copies, items_covers, cover_review, cover_review_actions, items_csv, items_catalog, locations, location_order, platforms, settings, sync, checkouts, valuation, hardcover, store, series, share, tags, intake, archive, shelf_fill, romm, komga, periodicals, music, related_media, trash, labels, audits, duplicates, upcoming
 from app.routers import auth_routes
 
 
@@ -499,6 +499,68 @@ async def _periodic_price_alerts():
             logger.exception("Price-alert pass failed")
 
 
+_RELEASE_RADAR_INTERVAL = 86400  # at most one pass per day — each costs paced Hardcover calls
+
+
+async def check_release_radar() -> bool:
+    """One release-radar pass: ask Hardcover about the next batch of watched
+    series, record announced volumes, and send one digest. Returns True when
+    a pass ran.
+
+    The stamp and summary are written whenever the pass returns — including
+    when a refused token ended it — so a bad token costs one paced call a
+    day, not one every five minutes.
+    """
+    if not feature_enabled("release_radar") or not feature_enabled("hardcover"):
+        return False
+
+    from app.database import get_setting, set_setting
+    from app.services import release_radar
+
+    with get_db() as db:
+        # get_setting, so the HARDCOVER_TOKEN env override and decryption count (G15).
+        token = get_setting(db, "hardcover_token")
+        if not token:
+            return False
+        last = get_setting(db, "release_radar_last_run")
+        now = time.time()
+        try:
+            if last and now - float(last) < _RELEASE_RADAR_INTERVAL:
+                return False
+        except ValueError:
+            pass  # an unreadable stamp runs the pass and is overwritten below
+        notify_url = get_setting(db, "notify_url")
+        notify_format = get_setting(db, "notify_format") or "ntfy"
+        cap = release_radar.get_cap(db)
+
+    result = await release_radar.run_pass(
+        token, cap=cap, notify_url=notify_url, notify_format=notify_format,
+    )
+    with get_db() as db:
+        set_setting(db, "release_radar_last_run", str(now))
+        set_setting(db, "release_radar_last_summary", json.dumps(result))
+    logger.info(
+        "Release-radar pass: %d checked, %d not found, %d failed, %d new, "
+        "%d reminded, digest sent: %s, ended: %s",
+        result["checked"], result["not_found"], result["failed"], result["new"],
+        result["reminded"], result["sent"], result["outcome"],
+    )
+    return True
+
+
+async def _periodic_release_radar():
+    """Background task: run the daily release-radar pass."""
+    # Tests and the E2E servers set this so no pass can call Hardcover live.
+    if os.environ.get("SHELF_DISABLE_RELEASE_RADAR"):
+        return
+    while True:
+        await asyncio.sleep(300)  # check every 5 minutes
+        try:
+            await check_release_radar()
+        except Exception:
+            logger.exception("Release-radar pass failed")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
@@ -515,6 +577,7 @@ async def lifespan(app: FastAPI):
     hc_task = asyncio.create_task(_periodic_hardcover_sync())
     loan_task = asyncio.create_task(_periodic_loan_reminders())
     price_task = asyncio.create_task(_periodic_price_alerts())
+    radar_task = asyncio.create_task(_periodic_release_radar())
     from app.services import cover_queue
     cover_task = cover_queue.start()
     yield
@@ -522,6 +585,7 @@ async def lifespan(app: FastAPI):
     hc_task.cancel()
     loan_task.cancel()
     price_task.cancel()
+    radar_task.cancel()
     if cover_task is not None:
         cover_task.cancel()
 
@@ -696,6 +760,8 @@ app.include_router(valuation.router)
 app.include_router(hardcover.router)
 app.include_router(store.router)
 app.include_router(series.router)
+app.include_router(upcoming.router)
+app.include_router(upcoming.page_router)
 app.include_router(share.router)
 app.include_router(item_copies.router)
 app.include_router(intake.router)

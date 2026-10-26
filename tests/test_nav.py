@@ -644,6 +644,7 @@ def test_every_top_level_page_is_reachable_from_the_nav():
             "stats is a stats surface (wrap-ups design). The link is pinned by "
             "test_wrapup_route.py::test_stats_links_to_the_wrapup_always"
         ),
+        "/upcoming": "reached from the Upcoming releases link in the Series page header, not the nav (release-radar plan); pinned by tests/test_upcoming_page.py",
         "/cover-review": (
             "reached from Settings -> Data -> Maintenance, not the nav: a "
             "maintenance chore does not earn permanent nav real estate "

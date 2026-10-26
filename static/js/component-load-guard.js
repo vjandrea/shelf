@@ -39,6 +39,7 @@
         hardcoverPush: 'components-item.js',
         hcResultCard: 'components-item.js',
         manualAddForm: 'components-item.js',
+        upcomingRow: 'components-item.js',
 
         settingsTabs: 'components-settings.js',
         lendingPanel: 'components-settings.js',

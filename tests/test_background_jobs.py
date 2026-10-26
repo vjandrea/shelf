@@ -1,4 +1,4 @@
-"""T8: each of the four background jobs skips its pass while its feature is
+"""T8: each of the five background jobs skips its pass while its feature is
 off — no service call, no last-sync/last-sent stamp written — and resumes on
 the very next pass once the feature is turned back on (no restart needed).
 
@@ -185,3 +185,42 @@ class TestPriceAlertsFeatureGate:
             assert await check_price_alerts() is True
         lookup.assert_awaited_once()
         assert _stamp(db, "price_alert_last_run") is not None
+
+
+class TestReleaseRadarFeatureGate:
+    def _seed(self, db):
+        _insert_item(db, title="Dune", isbn=None, series_name="Dune")
+        db.execute("INSERT INTO release_watches (series_name) VALUES ('Dune')")
+        _set_setting(db, "hardcover_token", "test-token")
+        db.execute("COMMIT")
+
+    def _found(self):
+        from app.services import provider_result
+        return AsyncMock(return_value=provider_result.found("hardcover", []))
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("key", ["release_radar", "hardcover"])
+    async def test_off_skips_lookup_and_writes_no_stamp(self, db, key):
+        from app.main import check_release_radar
+        self._seed(db)
+        _toggle(key, False)
+
+        with patch("app.services.hardcover.get_series_upcoming", new=self._found()) as lookup:
+            assert await check_release_radar() is False
+        lookup.assert_not_awaited()
+        assert _stamp(db, "release_radar_last_run") is None
+
+    @pytest.mark.asyncio
+    async def test_on_after_off_runs_and_writes_stamp(self, db):
+        from app.main import check_release_radar
+        self._seed(db)
+        _toggle("release_radar", False)
+        with patch("app.services.hardcover.get_series_upcoming", new=self._found()) as lookup:
+            assert await check_release_radar() is False
+        lookup.assert_not_awaited()
+
+        _toggle("release_radar", True)
+        with patch("app.services.hardcover.get_series_upcoming", new=self._found()) as lookup:
+            assert await check_release_radar() is True
+        lookup.assert_awaited_once()
+        assert _stamp(db, "release_radar_last_run") is not None

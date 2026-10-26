@@ -328,6 +328,43 @@ MIGRATIONS: Sequence[tuple[int, str, str]] = (
      " created_at TEXT NOT NULL DEFAULT (datetime('now')),"
      " PRIMARY KEY (item_a_id, item_b_id),"
      " CHECK (item_a_id < item_b_id))"),
+    # Two new tables, so a numbered entry *and* a MIGRATION_TABLES copy each
+    # (G1). One plain single-statement string per entry, like 45/46 (G16).
+    # No logging here (G3).
+    (49, "Add release watches",
+     "CREATE TABLE IF NOT EXISTS release_watches ("
+     " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+     " series_name TEXT NOT NULL UNIQUE COLLATE NOCASE,"
+     " checked_at TEXT,"
+     " check_state TEXT,"
+     " created_at TEXT NOT NULL DEFAULT (datetime('now')))"),
+    (50, "Add upcoming releases",
+     "CREATE TABLE IF NOT EXISTS upcoming_releases ("
+     " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+     " watch_id INTEGER NOT NULL REFERENCES release_watches(id) ON DELETE CASCADE,"
+     " hc_book_id INTEGER NOT NULL,"
+     " title TEXT NOT NULL,"
+     " authors TEXT,"
+     " cover_url TEXT,"
+     " series_position REAL,"
+     " release_date TEXT,"
+     " notified_at TEXT,"
+     " reminded_at TEXT,"
+     " dismissed INTEGER NOT NULL DEFAULT 0,"
+     " created_at TEXT NOT NULL DEFAULT (datetime('now')),"
+     " UNIQUE (watch_id, hc_book_id))"),
+    # A feature with no flag row reads as on, and release_radar is new in the
+    # same release, so an upgrade would switch it on for every install — even
+    # one that turned Hardcover off, where the daily pass would spend the
+    # token. Start it off where Hardcover is off (its profile matches
+    # Hardcover's), untouched elsewhere. INSERT OR IGNORE keeps a choice
+    # already made. A fresh database has no feature rows, so this is a no-op
+    # there.
+    (51, "Start release radar off where Hardcover is off",
+     """INSERT OR IGNORE INTO settings (key, value)
+        SELECT 'feature.release_radar', '0'
+        WHERE EXISTS (SELECT 1 FROM settings
+                      WHERE key = 'feature.hardcover' AND value = '0')"""),
 )
 
 MIGRATION_TABLES = """
@@ -691,6 +728,32 @@ CREATE TABLE IF NOT EXISTS list_items (
     PRIMARY KEY (list_id, item_id)
 );
 CREATE INDEX IF NOT EXISTS idx_list_items_item ON list_items(item_id);
+
+-- Release radar: series the user watches, and the announced volumes found for
+-- them. Also created by migrations 49 and 50 for upgrades. Not in the portable
+-- archive (G147): user-owned state that a move to a new server resets.
+CREATE TABLE IF NOT EXISTS release_watches (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    series_name TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    checked_at  TEXT,                  -- last pass that got an answer; NULL = never
+    check_state TEXT,                  -- NULL | 'ok' | 'not_found'
+    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS upcoming_releases (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    watch_id        INTEGER NOT NULL REFERENCES release_watches(id) ON DELETE CASCADE,
+    hc_book_id      INTEGER NOT NULL,
+    title           TEXT NOT NULL,
+    authors         TEXT,
+    cover_url       TEXT,
+    series_position REAL,
+    release_date    TEXT,              -- ISO date, or NULL = announced, undated
+    notified_at     TEXT,
+    reminded_at     TEXT,
+    dismissed       INTEGER NOT NULL DEFAULT 0,
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (watch_id, hc_book_id)
+);
 """
 
 

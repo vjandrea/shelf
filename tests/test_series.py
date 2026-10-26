@@ -983,6 +983,36 @@ class TestSeriesRename:
         assert resp.status_code in (401, 403)
         assert db.execute("SELECT series_name FROM items").fetchone()["series_name"] == "Dune Saga"
 
+    def _watch_row(self, db, name):
+        cur = db.execute("INSERT INTO release_watches (series_name) VALUES (?)", (name,))
+        db.execute("INSERT INTO upcoming_releases (watch_id, hc_book_id, title) VALUES (?, ?, ?)",
+                   (cur.lastrowid, cur.lastrowid, f"{name} next"))
+        db.execute("COMMIT")
+
+    def _watches(self, db):
+        return sorted(
+            (r["series_name"], r["title"]) for r in db.execute(
+                "SELECT w.series_name, u.title FROM release_watches w "
+                "LEFT JOIN upcoming_releases u ON u.watch_id = w.id").fetchall()
+        )
+
+    def test_moves_the_release_watch(self, admin_client, db):
+        _insert_item(db, title="Dune", isbn="9789000007301", series_name="Dune Saga")
+        self._watch_row(db, "dune saga")
+
+        assert self._rename(admin_client, "Dune Saga", "Dune Chronicles").json()["ok"] is True
+        assert self._watches(db) == [("Dune Chronicles", "dune saga next")]
+
+    def test_rename_onto_a_watched_name_keeps_the_targets_watch(self, admin_client, db):
+        _insert_item(db, title="Dune", isbn="9789000007318", series_name="Dune Saga")
+        _insert_item(db, title="Messiah", isbn="9789000007325", series_name="Dune")
+        self._watch_row(db, "Dune Saga")
+        self._watch_row(db, "Dune")
+
+        data = self._rename(admin_client, "Dune Saga", "Dune").json()
+        assert data["ok"] is True and data["merged"] is True
+        assert self._watches(db) == [("Dune", "Dune next")]
+
 
 class TestSeriesRemoveAll:
     """POST /api/series/{name:path}/remove-all — disbands a series by
@@ -1074,6 +1104,19 @@ class TestSeriesRemoveAll:
         data = self._remove_all(admin_client, "Nothing Here").json()
         assert data["ok"] is False
         assert data["message"] == "Series not found"
+
+    def test_drops_the_release_watch_and_its_releases(self, admin_client, db):
+        _insert_item(db, title="Dune", isbn="9789000008301", series_name="Dune Saga")
+        _insert_item(db, title="Other", isbn="9789000008318", series_name="Other")
+        for name in ("Dune Saga", "Other"):
+            cur = db.execute("INSERT INTO release_watches (series_name) VALUES (?)", (name,))
+            db.execute("INSERT INTO upcoming_releases (watch_id, hc_book_id, title) VALUES (?, 1, 'x')",
+                       (cur.lastrowid,))
+        db.execute("COMMIT")
+
+        assert self._remove_all(admin_client, "dune saga").json()["ok"] is True
+        assert [r[0] for r in db.execute("SELECT series_name FROM release_watches")] == ["Other"]
+        assert db.execute("SELECT COUNT(*) FROM upcoming_releases").fetchone()[0] == 1
 
 
 class TestGetSeriesDescription:

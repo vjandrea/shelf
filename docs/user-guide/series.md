@@ -27,6 +27,37 @@ shelf against Hardcover's list: volumes you don't own appear with covers and
 an **Add to wishlist** button — one click per missing volume, or all of
 them. This is the feature that turns a wishlist into a completion list.
 
+## Watching for new volumes
+
+With Hardcover connected and **Release radar** on (Settings → Features), Shelf
+can tell you when a new book in a series is announced.
+
+- **Watch for new volumes** — a button on each series card (editors). It reads
+  **Watching** once the series is watched; press it again to stop. Viewers see
+  a **Watching** badge instead.
+- **Watch all complete series** — a button in the Series page header that
+  watches every series whose last **Check completeness** found nothing
+  missing. A series that has never been checked is not included, so run the
+  check first. Nothing is watched automatically.
+- **Not found on Hardcover** — shown under a watched series' name when
+  Hardcover has no series by that name. Rename the series to Hardcover's
+  spelling to fix it.
+- **Upcoming releases** — a link in the header to a page listing every
+  announced volume in the series you watch, by date, with undated ones last
+  (*announced — date TBA*). Editors can **+ Wishlist** a volume, **Dismiss**
+  it, or **Stop watching** its series. A volume you own or have on the
+  wishlist is not listed.
+- **The daily digest** — once a day Shelf asks Hardcover about your watched
+  series and sends one notification listing newly announced volumes and any
+  coming out within the week. It uses the notification URL on Settings →
+  Library → Lending; with no URL set, the page still fills in. The number of
+  series checked per day is set in Settings → Integrations → Hardcover →
+  **Release radar**; with more watches than that, they are checked in turn
+  over several days.
+
+Announcements come from Hardcover. If none is found for a series, that does
+not mean nothing is coming — Hardcover may not list the next volume yet.
+
 ## Fixing series data
 
 Metadata sources disagree about names ("The Expanse" vs "Expanse") and

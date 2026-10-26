@@ -143,6 +143,18 @@ admin. The grouping is `app/services/duplicates.py`. A merge of several records
 is one transaction: a refusal on any target rolls back the targets already
 merged, so an `ok: false` answer means nothing was written.
 
+**Release radar** (`release_radar`, profile Everything) is the watched-series
+feature and depends on **Hardcover**: every one of its routes declares
+`require_feature("release_radar")` **and** `require_feature("hardcover")`, so
+those routes are listed in both entries' `routes`, and the daily pass checks
+both flags. It owns one module, `app/routers/upcoming.py` (`GET /upcoming`,
+viewer, and `POST /api/upcoming/{release_id}/dismiss`, editor), and two routes
+in `app/routers/series.py`, which `series` owns: `POST
+/api/series/{name:path}/watch` and `POST /api/series/watch-all` (declared
+above every `{name:path}` route), each gated `series`, `release_radar`,
+`hardcover`. Its settings route, `POST /api/settings/release-radar`, is
+configuration and ungated. The pass is under *Background tasks*.
+
 **Trash** is two routers in `app/routers/trash.py`, registered separately: the
 unprefixed page (`GET /trash`, editor) and the API under `/api/trash/` —
 restore an item or copy (editor), delete permanently, **Empty expired** and
@@ -178,7 +190,8 @@ and a 978/979 ISBN), `item_links`, and the per-family side tables described
 below — `music_releases` + `music_media` + `music_tracks` +
 `music_identifiers`, `periodical_publications` + `periodical_issues`,
 `romm_records` and `komga_records`, `audit_sessions` + `audit_entries`
-(shelf audits, below), and `duplicate_dismissals` (one row per pair of records
+(shelf audits, below), `release_watches` + `upcoming_releases` (the release
+radar, under *Background tasks*), and `duplicate_dismissals` (one row per pair of records
 the user called *not duplicates*, stored `(min id, max id)` under a `CHECK`;
 both ids `ON DELETE CASCADE`, so a purge removes the rows and a trash keeps
 them).
@@ -978,7 +991,8 @@ lookup and the TMDb/IGDB query ladder above all resolve through it.
 **Outbound pacing** (`services/outbound.py`, limits in `config.py`): every
 external host has a minimum interval matching its published rate limit,
 with retry on transient failures. This is what lets a 200-book session not
-get throttled. Retries honour a server's `Retry-After` up to a fixed ceiling
+get throttled. The daily release-radar pass rides the same
+`api.hardcover.app` interval as every other Hardcover call. Retries honour a server's `Retry-After` up to a fixed ceiling
 (`RETRY_AFTER_MAX`, 30s); a stated wait beyond that ends the attempt and
 returns the response at once, on the reasoning that a server asking for an
 hour is reporting a spent quota rather than a blip — a 403 from Open Library
@@ -1072,18 +1086,19 @@ the queue and walk the reviewer backwards.
 Started in the app lifespan, each polling every 5 minutes and reading its
 schedule from `settings`: Audiobookshelf sync, Hardcover reading-status
 sync, overdue-loan reminder digest (ntfy / webhook via `services/notify.py`),
-the wishlist price-alert pass (`services/price_alerts.py`), plus the cover
-queue worker. All are plain `asyncio` tasks in the one
+the wishlist price-alert pass (`services/price_alerts.py`), the release-radar
+pass (`services/release_radar.py`), plus the cover queue worker. All are plain `asyncio` tasks in the one
 process. The Audiobookshelf sync is idempotent per item — an unchanged item
 is neither rewritten nor re-covered, and a same-format ISBN already present
 is adopted rather than inserted — and isolated per library, so one library's
 timeout is reported for that library and the rest still run.
 
-Each of the four scheduled jobs checks its feature flag (`abs_sync`,
-`hardcover`, `lending`, `price_alerts`) at the top of every pass. A disabled
+Each of the five scheduled jobs checks its feature flag (`abs_sync`,
+`hardcover`, `lending`, `price_alerts`, `release_radar` — which also needs
+`hardcover`) at the top of every pass. A disabled
 job skips the pass without calling its service and without writing its
 `abs_last_sync` / `hc_last_sync` / `loan_reminder_last_sent` /
-`price_alert_last_run` stamp, so
+`price_alert_last_run` / `release_radar_last_run` stamp, so
 re-enabling does not pretend a sync ran. The loop never exits: turning the
 feature back on resumes it at the next five-minute wake, with no restart. The
 cover queue is core and has no flag.
@@ -1114,6 +1129,33 @@ A feature with no flag row reads as on, so migration 41 writes
 an install on Standard or Minimal does not wake up spending its ISBNdb key.
 `SHELF_DISABLE_PRICE_ALERTS` keeps the loop from starting, which the test
 suites rely on to stay offline.
+
+The **release-radar pass** has the same silhouette and runs at most once a
+day. A `release_watches` row is one watched series, keyed by name
+(`UNIQUE COLLATE NOCASE`, like `series_meta`); the series rename route carries
+the watch to the new name and disband deletes it. The pass selects watches
+whose series still has a live item, never-checked first and then oldest
+`checked_at`, up to `release_radar_cap`, and asks Hardcover for each one's
+books with `get_series_upcoming` — a sibling of the completeness query that
+keeps announced volumes (the 1% readers floor applies only to books already
+out) and returns a `ProviderResult`. `no_match` marks the watch `not_found`;
+a transport failure records nothing, so the watch keeps its place;
+`rejected`, `rate_limited` or `no_credential` end the pass. Each book dated
+within the last 30 days or later (or undated, with this year's or a later
+release year) and not already owned or wishlisted — by `hardcover_book_id`
+anywhere, or by casefolded title in the series — is upserted into
+`upcoming_releases` (`UNIQUE (watch_id, hc_book_id)`, `ON DELETE CASCADE` from
+the watch). The upsert never touches `notified_at`, `reminded_at` or
+`dismissed`, so a date slip does not re-announce and a dismissal survives. One
+digest lists rows never announced and already-announced rows due within seven
+days; the stamps are written only when the send succeeds, or when no
+notification URL is set. Rows dated more than 60 days ago are pruned. The
+stamp and `release_radar_last_summary` are written whenever the pass returns,
+including after a refused token, so a bad token costs one call a day.
+Migration 51 writes `feature.release_radar = '0'` on upgrade wherever
+`feature.hardcover` is `'0'`. `SHELF_DISABLE_RELEASE_RADAR` keeps the loop
+from starting. Neither table is in the portable archive (G147): a restore
+from an archive starts with no watches.
 
 ## Self-hosted library sync
 

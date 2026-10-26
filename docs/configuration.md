@@ -22,6 +22,7 @@ Set these in your `.env` file next to `docker-compose.yml`, or with `-e` on
 | `DATA_DIR` | `/data` | Where the database, covers and certs live. Only relevant outside Docker |
 | `SHELF_DISABLE_RATE_LIMIT` | *(unset)* | Turns off per-IP rate limiting. For tests and local development only |
 | `SHELF_DISABLE_PRICE_ALERTS` | *(unset)* | Stops the nightly wishlist price-alert check from starting, so it never calls ISBNdb. For tests only — the test suite sets it; leave it unset in production |
+| `SHELF_DISABLE_RELEASE_RADAR` | *(unset)* | Stops the daily release-radar check from starting, so it never calls Hardcover. For tests only — the test suite sets it; leave it unset in production |
 | `SHELF_UPC_LOOKUP_URL` | *(unset)* | Overrides the UPC Item DB lookup endpoint. For the test suite only — the E2E gate points it at a local stub. Leave it unset in production; the trial endpoint is used and paced when it is |
 | `SHELF_ISSN_PORTAL_URL` | *(unset)* | Overrides the ISSN Portal resource URL (a template with an `{issn}` placeholder). For the test suite only — the E2E gate points it at a local stub. Leave it unset in production |
 
@@ -80,7 +81,7 @@ lives:
 | **Locations** | Add, rename and delete shelves/rooms. Names must be unique and non-blank — a clash is refused with a message rather than saved. Deleting a location unassigns its items |
 | **Borrowers** | People you lend to. Deleting a borrower keeps their loan history |
 | **Game Platforms** | The platform list used for video games — 30 built in, add your own |
-| **Lending** | "Overdue after N days" for loans without a due date (0 disables). Notification URL (ntfy topic or JSON webhook) for the daily overdue digest and the wishlist price-drop digest, with a **Send test** button |
+| **Lending** | "Overdue after N days" for loans without a due date (0 disables). Notification URL (ntfy topic or JSON webhook) for the daily overdue digest, the wishlist price-drop digest and the release-radar digest, with a **Send test** button |
 | **Trash** | "Prompt to empty Trash after N days" (`trash_retention_days`, default 180; 0 never prompts). Past the window, admins see a dismissable banner linking to the expired rows; nothing is deleted automatically. See [Trash](user-guide/items.md#trash) |
 
 ### Integrations
@@ -88,7 +89,7 @@ lives:
 | Card | Options |
 |---|---|
 | **Audiobookshelf Sync** | Server URL, optional browser URL, API token, **Test**, per-library include/exclude, sync interval, manual sync |
-| **Hardcover** | API token, import your Hardcover library, reading-status sync direction and schedule, export to Hardcover |
+| **Hardcover** | API token, import your Hardcover library, reading-status sync direction and schedule, export to Hardcover. Its **Release radar** block sets the series checked per day (`release_radar_cap`, 1–200, default 50) and shows the last run. See [Series → Watching for new volumes](user-guide/series.md#watching-for-new-volumes) |
 | **Collection Valuation** | ISBNdb API key, valuate all / test key. Its **Price alerts** block sets the drop threshold (`price_alert_threshold_pct`, 1–100, default 15) and books checked per night (`price_alert_nightly_cap`, 1–500, default 100), and shows the last run. See [Price alerts](user-guide/wishlist-and-store-mode.md#price-alerts) |
 | **Google Books** | Optional API key, **Test Key**. Authenticates the Google Books requests Shelf already makes; keyless access stays enabled without it |
 | **Movie Database (TMDb)** | API key for DVD / Blu-ray lookups, for **Find cover** on a DVD, and for the lookup a Photo Intake row typed DVD runs when you confirm it |
@@ -119,11 +120,14 @@ Add users, set roles, reset passwords. See [Users & roles](user-guide/users-and-
 
 Turn optional parts of Shelf on or off: Lending, Series, Statistics, Store
 Mode, Sharing, Valuation, Price alerts, Music, Periodicals, Shelf Fill, Photo
-Intake, Hardcover, Audiobookshelf sync, Komga, RomM and Collector tools. An
+Intake, Hardcover, Release radar, Audiobookshelf sync, Komga, RomM and
+Collector tools. An
 upgrade leaves every existing feature as it was. A feature new in a release
 starts on, except where an upgrade would switch on something the install's
 profile left out: Price alerts and Collector tools start off on an upgrade
-where Valuation is off. A new install starts with the profile chosen in the
+where Valuation is off, and Release radar starts off on an upgrade where
+Hardcover is off. Release radar also needs Hardcover on to do anything. A new
+install starts with the profile chosen in the
 setup wizard.
 Scanning, Browse, items, locations, tags, Trash, settings, users, backups and
 logs are core and cannot be turned off.
@@ -134,7 +138,7 @@ logs are core and cannot be turned off.
 |---|---|
 | **Minimal** | None — only the core above |
 | **Standard** | Lending, Series, Statistics, Store Mode, Music, Periodicals, Shelf Fill |
-| **Everything** | Standard, plus Sharing, Valuation, Price alerts, Photo Intake, Hardcover, Audiobookshelf sync, Komga, RomM and Collector tools |
+| **Everything** | Standard, plus Sharing, Valuation, Price alerts, Photo Intake, Hardcover, Release radar, Audiobookshelf sync, Komga, RomM and Collector tools |
 
 The **Profiles** row at the top of Features applies one in a single step and
 shows which one the install matches. After you turn one feature on or off by
@@ -155,8 +159,8 @@ A feature that is off:
   Scan and Stats drop its buttons, badges, links and read-outs. Fields you
   typed onto an item stay, such as a series name or a manual value,
 - **pauses its background job** — Audiobookshelf sync, Hardcover sync, the
-  overdue-loan digest and the nightly price-alert check skip their runs until
-  it is back on,
+  overdue-loan digest, the nightly price-alert check and the daily
+  release-radar check skip their runs until it is back on,
 - **keeps all its data.** Turning it back on shows everything again,
   including anything added while it was off.
 

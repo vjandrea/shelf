@@ -242,6 +242,29 @@ async def update_price_alert_settings(
     return RedirectResponse(url="/settings", status_code=303)
 
 
+@router.post("/release-radar")
+async def update_release_radar_settings(release_radar_cap: str = Form("50")):
+    """Save the release-radar daily series cap.
+
+    Separate from POST /api/settings for the same reason as /price-alerts: a
+    partial form posted there would blank the integration credentials.
+    """
+    from app.services import release_radar
+
+    # ASCII-only int(): str.isdigit() also accepts "²" (see /trash).
+    raw = release_radar_cap.strip()
+    try:
+        cap = int(raw) if raw.isascii() else -1
+    except ValueError:
+        cap = -1
+    if not 1 <= cap <= release_radar.MAX_CAP:
+        return {"ok": False, "message": f"Series per day must be a whole number from 1 to {release_radar.MAX_CAP}"}
+
+    with get_db() as db:
+        _upsert_setting(db, "release_radar_cap", str(cap))
+    return RedirectResponse(url="/settings", status_code=303)
+
+
 @router.post("/labels")
 async def update_labels_settings(copy_barcode_prefix: str = Form("")):
     """Save the copy-label prefix.

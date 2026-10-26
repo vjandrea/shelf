@@ -6,6 +6,55 @@ All notable changes to Shelf are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.73.0] - 2026-10-25
+
+Shelf could tell you which volumes of a series you were missing, but not that a
+new one had been announced. Unless you kept checking Hardcover yourself, you
+found out about a new book in a series you collect after it was already out.
+This release adds a **release radar**: watch a series, and Shelf checks
+Hardcover once a day and tells you when a new volume is announced and again in
+its release week.
+
+### Added
+
+- **Watch a series for new volumes.** Each card on the Series page has a
+  **Watch for new volumes** button for editors, and the page header has **Watch
+  all complete series**, which watches every series whose last completeness
+  check found nothing missing. A watched series that Hardcover cannot find says
+  **Not found on Hardcover** on its card, so the watch does not fail silently.
+  Nothing is watched automatically.
+- **Upcoming releases.** A new page, linked from the Series page header, lists
+  the announced volumes in the series you watch. It shows the soonest first and
+  undated announcements last, as "announced — date TBA". From each row, editors
+  can **+ Wishlist** the book, **Dismiss** the announcement, or **Stop
+  watching** the series. A volume you already own or have wishlisted is not
+  shown. When nothing is found, the page says so, and says that this is not the
+  same as nothing coming: Hardcover may not list a volume yet.
+- **A daily release digest.** When a notification URL is set (Settings →
+  Library → Lending, the same one loan reminders use), Shelf sends one message a
+  day at most. The message lists newly announced volumes and the ones coming
+  out that week. Each volume is announced once. A date that slips updates the
+  page without announcing it again, and a send that fails is retried the next
+  day. With no URL, the page still fills.
+- **Release radar settings.** A block on Settings → Integrations, beside
+  Hardcover, shows when the radar last ran and how many watched series it
+  checks per day (50 by default). Shelf checks the ones it looked at longest
+  ago first, so a long watch list is covered over several days.
+
+### Changed
+
+- **Release radar is a new feature in Settings → Features, and it needs
+  Hardcover.** It starts on, except where Hardcover is turned off: there the
+  upgrade turns it off too, so no install starts spending its Hardcover token
+  unasked. Nothing is checked until you watch a series. Turning either one off hides every release-radar
+  control and page.
+
+Some things it deliberately does not do: it watches series, not authors; it
+covers books only, not games or discs; it never adds anything to your wishlist
+by itself; and watches are shared by the whole library, not kept per user. A
+portable archive does not carry your watches (a database backup does), and
+**Watch all complete series** puts them back in one click.
+
 ## [0.72.0] - 2026-10-21
 
 Shelf has been able to merge two records of the same book since early on, but
@@ -5299,6 +5348,7 @@ First public release.
   protection, encrypted credential storage, optional passphrase-encrypted
   backups, HTTPS out of the box, non-root container
 
+[0.73.0]: https://github.com/dgahagan/shelf/releases/tag/v0.73.0
 [0.72.0]: https://github.com/dgahagan/shelf/releases/tag/v0.72.0
 [0.71.0]: https://github.com/dgahagan/shelf/releases/tag/v0.71.0
 [0.70.0]: https://github.com/dgahagan/shelf/releases/tag/v0.70.0

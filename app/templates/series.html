@@ -2,9 +2,20 @@
 {% block title %}Series — Shelf{% endblock %}
 {% block content %}
 {% set can_edit = user and user.role in ('admin', 'editor') %}
+{% set radar = radar_on and has_hardcover %}
 <div class="mb-6">
     <h1 class="text-2xl font-bold">Series <span class="text-shelf-muted text-lg font-normal">({{ series_list|length }})</span></h1>
     <p class="text-sm text-shelf-muted mt-1">Your library grouped by series. Gaps are inferred from position numbers{% if has_hardcover %}; use <span class="text-shelf-accent2">Check completeness</span> to compare against Hardcover's full series listing{% endif %}.</p>
+    {% if radar %}
+    <div class="flex flex-wrap items-center gap-3 mt-3">
+        <a href="/upcoming" class="text-sm text-shelf-accent2 hover:underline" data-testid="upcoming-link">Upcoming releases</a>
+        {% if can_edit %}
+        <button type="button" hx-post="/api/series/watch-all" hx-swap="none"
+                class="px-3 py-1.5 bg-shelf-card border border-shelf-border text-shelf-muted rounded-lg text-xs hover:text-shelf-text hover:border-shelf-accent/50 transition-colors"
+                data-testid="watch-all">Watch all complete series</button>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 
 {% if not series_list %}
@@ -39,6 +50,8 @@
          data-hc-total="{{ s.hc_total if s.hc_total is not none else '' }}"
          data-hc-missing="{{ s.hc_missing if s.hc_missing is not none else '' }}"
          data-hc-checked-at="{{ s.hc_checked_at or '' }}"
+         data-watched="{{ '1' if s.watched else '' }}"
+         data-watch-state="{{ s.watch_state }}"
          data-testid="series-card">
         <div class="flex items-start justify-between gap-3 flex-wrap">
             <div>
@@ -63,8 +76,18 @@
                         {%- if s.gaps|length > 8 %} +{{ s.gaps|length - 8 }} more{% endif %}</span>
                     {% endif %}
                 </p>
+                {% if radar and s.watch_state == 'not_found' %}
+                <p class="text-xs text-shelf-warning mt-0.5" data-testid="watch-not-found">Not found on Hardcover</p>
+                {% endif %}
             </div>
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex flex-wrap items-center gap-2">
+                {% if radar and can_edit %}
+                <button type="button" @click="toggleWatch" :disabled="watching" :aria-pressed="watchPressed"
+                        class="px-3 py-1.5 bg-shelf-card border border-shelf-border text-shelf-muted rounded-lg text-xs hover:text-shelf-text hover:border-shelf-accent/50 transition-colors disabled:opacity-50"
+                        data-testid="watch-series" x-text="watchLabel">{{ 'Watching' if s.watched else 'Watch for new volumes' }}</button>
+                {% elif radar and s.watched %}
+                <span class="inline-block whitespace-nowrap px-2 py-0.5 rounded-full text-xs font-medium bg-shelf-accent/20 text-shelf-accent2" data-testid="watching-pill">Watching</span>
+                {% endif %}
                 {% if has_hardcover and can_edit %}
                 <button @click="fetchDescription"
                         :disabled="fetching"

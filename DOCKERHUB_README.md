@@ -136,7 +136,7 @@ key material.
 - Video game support with IGDB metadata and 30+ platforms (Atari 2600 to PS5)
 
 ### Collection Management
-- Choose your features — pick Minimal, Standard or Everything in the setup wizard, then turn any optional part (Lending, Sharing, Valuation, Price alerts, Collector tools, the integrations, …) on or off in Settings → Features; data is kept while a feature is off
+- Choose your features — pick Minimal, Standard or Everything in the setup wizard, then turn any optional part (Lending, Sharing, Valuation, Price alerts, Release radar, Collector tools, the integrations, …) on or off in Settings → Features; data is kept while a feature is off
 - Home overview — totals, what is lent out, missing covers, a media-type breakdown and recent additions, with Browse kept for searching and bulk editing
 - Filter and search by media type, location, status (read, watched, played), ownership, lending status, source (which sync, provider or import an item arrived from), custom tags, and author — every author on an item page is a link to everything by that person, co-authors and translators each counted on their own
 - Shelf Fill — keep one shelf selected and scan item after item onto it; Arrange drags the copies on a shelf into the order they really sit in, or sorts them by title, creator, series, release or issue
@@ -144,6 +144,7 @@ key material.
 - Trash — deleting an item or removing a copy moves it to Trash with its tags, loans, copies and history intact; editors restore, admins empty it, prompted once rows pass a retention window (180 days by default)
 - Reading tracking — want-to-read, reading, and read with start/finish dates, and a default status for a scanning session
 - Series tracking — grouped by series with position numbers, gap detection, and one-click "add missing volumes to wishlist" via Hardcover; series synopses, plus rename/merge/disband from the series card
+- Release radar — watch a series and Shelf checks Hardcover daily for newly announced volumes, lists them on an Upcoming releases page, and sends a daily ntfy/webhook digest
 - Stats dashboard — books read per year, collection growth, top authors, and value-over-time charts
 - Locations — organize by room, shelf, or any system you like, and nest them: a shelf inside a bookcase inside a room
 - Checkout system — lend to borrowers and track who has what, with overdue badges and an optional daily reminder digest (ntfy/webhook)
@@ -168,7 +169,7 @@ Shelf works fully out of the box with no API keys. These optional integrations a
 
 | Service | What it adds | Free? |
 |---------|-------------|-------|
-| [Hardcover](https://hardcover.app) | Reading status sync, richer metadata, series gap checks, Discover page | Yes |
+| [Hardcover](https://hardcover.app) | Reading status sync, richer metadata, series gap checks, release radar for new volumes, Discover page | Yes |
 | [Audiobookshelf](https://www.audiobookshelf.org) | Sync selected audiobook libraries, link physical + digital formats | Yes |
 | [IGDB](https://dev.twitch.tv/console) (Twitch) | Video game metadata, cover art, platform info — on UPC scan, title search, and Photo Intake confirm | Yes |
 | [RomM](https://romm.app) | Sync a self-hosted RomM server's digital game library | Yes |

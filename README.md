@@ -3,8 +3,8 @@
 [![Release](https://img.shields.io/github/v/release/dgahagan/shelf)](https://github.com/dgahagan/shelf/releases)
 [![Docker Pulls](https://img.shields.io/docker/pulls/dangahagan/shelf)](https://hub.docker.com/r/dangahagan/shelf)
 [![CI](https://github.com/dgahagan/shelf/actions/workflows/test.yml/badge.svg)](https://github.com/dgahagan/shelf/actions/workflows/test.yml)
-[![Unit tests](https://img.shields.io/badge/unit%20tests-5621%20passing-brightgreen)](https://github.com/dgahagan/shelf/actions/workflows/test.yml)
-[![E2E tests](https://img.shields.io/badge/e2e%20tests-353%20passing-brightgreen)](https://github.com/dgahagan/shelf/actions/workflows/test.yml)
+[![Unit tests](https://img.shields.io/badge/unit%20tests-5792%20passing-brightgreen)](https://github.com/dgahagan/shelf/actions/workflows/test.yml)
+[![E2E tests](https://img.shields.io/badge/e2e%20tests-355%20passing-brightgreen)](https://github.com/dgahagan/shelf/actions/workflows/test.yml)
 [![License: AGPL-3.0](https://img.shields.io/github/license/dgahagan/shelf)](LICENSE)
 
 A self-hosted home library catalog with barcode scanning, multi-mode scanning workflows, automatic metadata lookup, cover art, and collection management — all in a single Docker container.
@@ -185,7 +185,7 @@ photo into overlapping tiles for better accuracy — with a cost estimate for
 each option before anything is sent.
 
 ### Collection Management
-- **Choose your features** — the setup wizard starts you on Minimal, Standard or Everything, and Settings → Features turns any optional part (Lending, Sharing, Valuation, Price alerts, Photo Intake, Collector tools, the integrations, …) on or off later, one at a time or by applying a profile. A feature that is off leaves the pages you use, and its data is kept for when it comes back. See [Configuration → Features](docs/configuration.md#features)
+- **Choose your features** — the setup wizard starts you on Minimal, Standard or Everything, and Settings → Features turns any optional part (Lending, Sharing, Valuation, Price alerts, Release radar, Photo Intake, Collector tools, the integrations, …) on or off later, one at a time or by applying a profile. A feature that is off leaves the pages you use, and its data is kept for when it comes back. See [Configuration → Features](docs/configuration.md#features)
 - **Home overview** — Shelf opens on a page that answers "what is happening in my library?": catalogue, owned and wishlist totals, what is lent out, missing covers, a media-type breakdown and recent additions. Browse stays the place for searching, filtering and bulk editing. See [Home](docs/user-guide/home.md)
 - **Filter and search** — by media type, location, status (read, watched, played), ownership, lending status, source (which sync, provider or import an item arrived from), and free text
 - **Reading tracking** — want-to-read, reading, and read with start/finish dates, and a default status for a scanning session
@@ -207,6 +207,7 @@ each option before anything is sent.
 - **Loan reminders** — overdue loans get a red badge, and an optional daily digest (ntfy or webhook) nags you about them; configure under Settings → Library → Lending
 - **Wishlist** — a list of what you want, kept alongside your catalog. Owning and wishing are separate: an item can also be neither — a book you read from the library stays in your catalog, with its reading history, without being owned or wished for
 - **Series tracking** — a Series page groups your library by series with position numbers, flags likely gaps, and (with Hardcover configured) checks the full series and adds missing volumes to your wishlist in one click. Each series can carry its own synopsis, written inline or fetched from Hardcover. Rename a series (renaming onto an existing name merges the two — the quick fix for duplicate series records left by metadata lookup) or disband it entirely, right from the series card
+- **Release radar** — watch a series (or every complete one at once) and Shelf checks Hardcover daily for newly announced volumes: an Upcoming releases page lists them by date with one-click wishlisting, and a daily digest goes to your ntfy or webhook URL. See [Series → Watching for new volumes](docs/user-guide/series.md#watching-for-new-volumes)
 - **Bulk editing** — select multiple items in Browse to move them, change type or status, add them to or remove them from the wishlist, set and clear their series, or add and remove a tag in one go
 - **Choose your columns** — Browse's list view has a column picker (value, series, publisher, year, pages, language, added date, platform, ISBN/UPC, and more), on top of the author/type/location/status shown by default; the choice is remembered per browser, not per account
 - **Valuation report** — location-grouped, print-ready report of your collection's list-price value for insurance documentation ([print view](screenshots/valuation-report-print.png)); prices via ISBNdb
@@ -312,7 +313,7 @@ Configure in Settings to unlock additional features:
 
 | Service | Enables | Link |
 |---------|---------|------|
-| **Hardcover** | Reading status sync, richer metadata, import/export, Discover page | [hardcover.app](https://hardcover.app) |
+| **Hardcover** | Reading status sync, richer metadata, import/export, Discover page, release radar for new volumes in watched series | [hardcover.app](https://hardcover.app) |
 | **Google Books** | Optional credentialed metadata, synopsis, and cover requests; anonymous access remains available | [Google Books API](https://developers.google.com/books) |
 | **IGDB** (Twitch) | Video game metadata, cover art, and platform info — on UPC scan, title search, and Photo Intake confirm | [dev.twitch.tv/console](https://dev.twitch.tv/console) |
 | **Discogs** | Pick the exact pressing of a Music item; Shelf keeps only the Discogs release ID | [discogs.com/settings/developers](https://www.discogs.com/settings/developers) |

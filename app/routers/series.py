@@ -7,11 +7,13 @@ can be added to the wishlist via the existing add-to-shelf endpoint.
 import logging
 
 from fastapi import APIRouter, Depends, Form, Request
+from fastapi.responses import Response
 
 from app.auth import require_role
-from app.features import require_feature
+from app.features import feature_enabled, require_feature
 from app.config import BOOK_MEDIA_TYPES
 from app.database import gc_orphaned_series_meta, get_db, get_setting
+from app.routers import items_common
 from app.services import lists
 from app.services import hardcover
 
@@ -75,6 +77,10 @@ async def series_page(request: Request, _=Depends(require_role("viewer")),
             "(series_name IS NULL OR TRIM(series_name) = '') "
             f"AND media_type IN ({','.join('?' * len(UNASSIGNED_MEDIA_TYPES))})"
         )
+        watches = {
+            r["series_name"].casefold(): r["check_state"]
+            for r in db.execute("SELECT series_name, check_state FROM release_watches").fetchall()
+        }
         unassigned_total = db.execute(
             f"SELECT COUNT(*) FROM items_live WHERE {_unassigned_where}",
             UNASSIGNED_MEDIA_TYPES,
@@ -120,6 +126,9 @@ async def series_page(request: Request, _=Depends(require_role("viewer")),
         entry["hc_total"] = meta["hc_total"] if meta else None
         entry["hc_missing"] = meta["hc_missing"] if meta else None
         entry["hc_checked_at"] = meta["hc_checked_at"] if meta else None
+        key = entry["name"].casefold()
+        entry["watched"] = key in watches
+        entry["watch_state"] = watches.get(key) or ""
 
     # Largest series first; ties alphabetical
     series_list = sorted(series.values(), key=lambda s: (-len(s["items"]), s["name"].casefold()))
@@ -129,6 +138,8 @@ async def series_page(request: Request, _=Depends(require_role("viewer")),
         {
             "series_list": series_list,
             "has_hardcover": has_hardcover,
+            # The radar needs both flags; every watch control hides otherwise.
+            "radar_on": feature_enabled("release_radar") and feature_enabled("hardcover"),
             "unassigned_items": unassigned_items,
             "unassigned_total": unassigned_total,
         },
@@ -182,6 +193,43 @@ async def check_series(name: str = "", _=Depends(require_role("viewer")),
             _upsert_series_check(db, name, len(out), missing)
 
     return {"ok": True, "series": name, "total": len(out), "missing": missing, "books": out}
+
+
+@router.post("/api/series/watch-all")
+async def watch_all_complete_series(_=Depends(require_role("editor")),
+                                    __=Depends(require_feature("series")),
+                                    ___=Depends(require_feature("release_radar")),
+                                    ____=Depends(require_feature("hardcover"))):
+    """Watch every series whose last Hardcover check found nothing missing.
+
+    Declared above every `{name:path}` route (G119). `hc_missing = 0` is the
+    only stored Hardcover fact about completeness; a manual "complete" flag
+    does not count. Called by HTMX only: an empty body (the button carries
+    `hx-swap="none"`, G54), a toast, and a refresh when anything was added.
+    """
+    candidates = (
+        "FROM series_meta m WHERE m.hc_missing = 0 "
+        "AND EXISTS (SELECT 1 FROM items_live i "
+        "WHERE i.series_name = m.name COLLATE NOCASE)"
+    )
+    with get_db() as db:
+        eligible = db.execute("SELECT COUNT(*) " + candidates).fetchone()[0]
+        cur = db.execute(
+            "INSERT OR IGNORE INTO release_watches (series_name) SELECT m.name " + candidates
+        )
+        added = cur.rowcount
+    if not added:
+        # rowcount 0 means either nothing qualifies or everything that does is
+        # already watched; the second must not send the user off to re-check.
+        message = (f"All {eligible} complete series are already watched" if eligible
+                   else "No checked, complete series to add — run Check completeness first")
+        return Response(status_code=200, headers={"HX-Trigger": items_common._toast_header(
+            message, "info")})
+    return Response(status_code=200, headers={
+        "HX-Trigger": items_common._toast_header(
+            f"Watching {added} more series"),
+        "HX-Refresh": "true",
+    })
 
 
 def _upsert_series_check(db, name: str, hc_total: int, hc_missing: int) -> None:
@@ -337,6 +385,62 @@ async def set_series_complete(name: str, complete: str = Form(...),
         return {"ok": True, "name": name, "complete": bool(value)}
 
 
+@router.post("/api/series/{name:path}/watch")
+async def set_series_watch(request: Request, name: str, watch: str = Form(...),
+                           _=Depends(require_role("editor")),
+                           __=Depends(require_feature("series")),
+                           ___=Depends(require_feature("release_radar")),
+                           ____=Depends(require_feature("hardcover"))):
+    """Watch (`watch=1`) or stop watching (`watch=0`) a series for new volumes.
+
+    JSON for the Series card's `fetch`. An HTMX request (the `/upcoming`
+    Stop watching button) gets an empty body (`hx-swap="none"` on the button,
+    G54), a toast, and a refresh. Stopping a watch deletes its announced rows
+    with it (ON DELETE CASCADE).
+    """
+    is_htmx = request.headers.get("HX-Request") == "true"
+    name = name.strip()
+    watch = (watch or "").strip()
+
+    def refuse(message):
+        if is_htmx:
+            return Response(status_code=200, headers={
+                "HX-Trigger": items_common._toast_header(message, "error")})
+        return {"ok": False, "message": message}
+
+    if not name:
+        return refuse("Series name required")
+    if watch not in ("0", "1"):
+        return refuse("watch must be '0' or '1'")
+
+    with get_db() as db:
+        if watch == "1":
+            # Guard-then-write: take the write lock first (G18).
+            db.execute("BEGIN IMMEDIATE")
+            count = db.execute(
+                "SELECT COUNT(*) AS c FROM items_live WHERE series_name = ? COLLATE NOCASE",
+                (name,),
+            ).fetchone()["c"]
+            if not count:
+                db.rollback()
+                return refuse("Series not found")
+            db.execute("INSERT OR IGNORE INTO release_watches (series_name) VALUES (?)", (name,))
+            db.commit()
+        else:
+            # No live-series guard: an item edit can empty a watched series,
+            # and /upcoming still shows its rows, so Stop watching must work.
+            db.execute("DELETE FROM release_watches WHERE series_name = ? COLLATE NOCASE", (name,))
+
+    watched = watch == "1"
+    if is_htmx:
+        message = f"Watching {name}" if watched else f"Stopped watching {name}"
+        return Response(status_code=200, headers={
+            "HX-Trigger": items_common._toast_header(message),
+            "HX-Refresh": "true",
+        })
+    return {"ok": True, "watched": watched}
+
+
 @router.post("/api/series/{name:path}/rename")
 async def rename_series(name: str, new_name: str = Form(""),
                         _=Depends(require_role("editor")),
@@ -426,6 +530,16 @@ async def rename_series(name: str, new_name: str = Form(""),
             _upsert_series_check_row(db, new_name, src_meta["hc_total"],
                                      src_meta["hc_missing"], src_meta["hc_checked_at"])
 
+        # The watch follows the series. Onto an already-watched name the
+        # UPDATE is a no-op and the DELETE drops the source watch (its rows
+        # cascade), so the target's snapshot survives.
+        db.execute(
+            "UPDATE OR IGNORE release_watches SET series_name = ? "
+            "WHERE series_name = ? COLLATE NOCASE",
+            (new_name, name),
+        )
+        db.execute("DELETE FROM release_watches WHERE series_name = ? COLLATE NOCASE", (name,))
+
         gc_orphaned_series_meta(db, name)
 
         return {"ok": True, "name": new_name, "merged": merged, "count": count}
@@ -454,8 +568,10 @@ async def remove_all_from_series(name: str, _=Depends(require_role("editor")),
             return {"ok": False, "message": "Series not found"}
 
         # Same connection, after the UPDATE — nothing references this name
-        # any more, so its series_meta row (if any) is garbage.
+        # any more, so its series_meta row (if any) is garbage, and so is its
+        # watch (its announced rows cascade).
         gc_orphaned_series_meta(db, name)
+        db.execute("DELETE FROM release_watches WHERE series_name = ? COLLATE NOCASE", (name,))
 
         return {"ok": True, "count": count}
 

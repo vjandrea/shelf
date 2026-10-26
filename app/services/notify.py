@@ -1,5 +1,5 @@
-"""Outbound notifications for loan reminders and price-drop digests (ntfy or
-generic JSON webhook).
+"""Outbound notifications for loan reminders, price-drop digests and
+release-radar digests (ntfy or generic JSON webhook).
 
 Kept deliberately tiny: one function, two formats. The URL is operator-
 configured in settings (encrypted at rest — an ntfy topic URL is effectively

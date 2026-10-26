@@ -1509,7 +1509,12 @@ no cap would not have found this entry under the old title.)
   may later read. Scope the action to something the test owns (a location it
   created), and assert the exact count. Found in `feat/copy-labels` T9
   (`ed7d039`, 2026-10-20): the first draft asserted `count >= 2` because the
-  real number depended on run order.
+  real number depended on run order. Met again in `feat/release-radar` T10
+  (`5ed088e`, 2026-10-22): **Watch all complete series** has no scope to
+  narrow — it watches every `hc_missing = 0` series on the server — so the
+  test snapshots the watch ids before it presses the button and deletes every
+  newer one in cleanup. When the action cannot be scoped, own its blast
+  radius instead.
 - **Evidence:** caught on paper by the issue-31 `/plan-review` (R2,
   2026-08-21). The plan's `E2E Unassigned Book` already had at least eight
   earlier-sorting seriesless titles ahead of it (`1984`, `Book To Delete`,
@@ -6337,6 +6342,29 @@ python -m pytest tests/test_audits_service.py -q -k "Deleted or Purged"
   only a quoted method.
 - **Status:** documented. **Lint candidate:** make `check_csrf_fetch.py` flag a
   `fetch()` whose `method:` value is not a string literal.
+
+## G149 — When a test deletes a parent row through its own `sqlite3.connect`
+
+- **Rule:** a raw `sqlite3.connect(...)` has `PRAGMA foreign_keys` **off**, so
+  `ON DELETE CASCADE` and `ON DELETE SET NULL` do not fire on it. Only
+  `get_db()` turns the pragma on, per connection. A test or E2E cleanup helper
+  that deletes a parent row on its own connection must delete the children
+  first (or run `PRAGMA foreign_keys=ON` on that connection), and a test that
+  wants to *prove* a cascade must delete through `get_db()` — the `db` fixture.
+- **Why:** with the pragma off the delete succeeds and leaves orphan child
+  rows behind. On the session-scoped `live_server` (G34) those orphans are
+  read by every later file, and a cascade test written on a raw connection
+  passes on the orphan check only if it never looks at the children.
+- **Evidence:** `feat/release-radar` T10 (`5ed088e`, 2026-10-22): the E2E
+  cleanup deletes `release_watches` rows through `tests/e2e`'s raw
+  connections, so it deletes `upcoming_releases` explicitly rather than
+  relying on the `watch_id` cascade. The unit cascade tests
+  (`tests/test_release_radar_migration.py`, `tests/test_release_watch_routes.py`)
+  go through `db`/the app, where the pragma is on.
+- **Verify:** `grep -n "foreign_keys=ON" app/database.py` still shows the
+  pragma inside `get_db()`, and `grep -rn "sqlite3.connect" tests/e2e/ | head`
+  still finds the raw helpers.
+- **Status:** documented.
 
 ## Graveyard
 

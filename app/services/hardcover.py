@@ -1,6 +1,7 @@
 """Hardcover.app GraphQL API client for book metadata and library sync."""
 
 import logging
+from datetime import date
 
 import httpx
 
@@ -729,6 +730,164 @@ async def get_series_books(series_name: str, token: str, client: httpx.AsyncClie
         return _parse_series_entries(entries) or None
 
     return None
+
+
+def _parse_series_upcoming(entries: list, today: date) -> list[dict]:
+    """Normalize book_series rows for the release radar.
+
+    A sibling of `_parse_series_entries` (which is unchanged, as is the
+    completeness check that calls it). Same canonical/compilation drop and
+    same most-shelved collapse of equal positions; the difference is the 1%
+    `users_count` floor, applied only to rows whose parsed `release_date` is
+    before `today`. An announced volume has no readers yet, so a future or
+    undated row is kept whatever its count.
+    """
+    books = []
+    seen_ids = set()
+    for entry in entries or []:
+        book = (entry or {}).get("book") or {}
+        if not book.get("title") or not book.get("id"):
+            continue
+        if book["id"] in seen_ids:
+            continue
+        if book.get("canonical_id") is not None or book.get("compilation"):
+            continue
+        seen_ids.add(book["id"])
+
+        authors = None
+        contributions = book.get("contributions", [])
+        if contributions:
+            names = [c["author"]["name"] for c in contributions if c.get("author", {}).get("name")]
+            authors = authors_svc.join_names(names)
+
+        cover_url = None
+        ci = book.get("cached_image")
+        if isinstance(ci, dict):
+            cover_url = ci.get("url")
+        elif isinstance(ci, str):
+            cover_url = ci
+
+        release_date = None
+        raw_date = book.get("release_date")
+        if isinstance(raw_date, str):
+            try:
+                release_date = date.fromisoformat(raw_date[:10])
+            except ValueError:
+                release_date = None
+
+        books.append({
+            "hardcover_book_id": book["id"],
+            "title": book["title"],
+            "authors": authors,
+            "cover_url": cover_url,
+            "series_position": entry.get("position"),
+            "_date": release_date,
+            "release_year": book.get("release_year"),
+            "_users": book.get("users_count") or 0,
+        })
+
+    by_pos: dict = {}
+    unpositioned = []
+    for b in books:
+        pos = b["series_position"]
+        if pos is None:
+            unpositioned.append(b)
+        elif pos not in by_pos or b["_users"] > by_pos[pos]["_users"]:
+            by_pos[pos] = b
+    books = list(by_pos.values()) + unpositioned
+
+    max_users = max((b["_users"] for b in books), default=0)
+    floor = max_users * 0.01
+    books = [
+        b for b in books
+        if (b["_date"] is None or b["_date"] >= today or b["_users"] >= floor)
+    ]
+
+    for b in books:
+        d = b.pop("_date")
+        b["release_date"] = d.isoformat() if d else None
+        del b["_users"]
+    books.sort(key=lambda b: (b["series_position"] is None, b["series_position"] or 0))
+    return books
+
+
+async def get_series_upcoming(
+    series_name: str,
+    token: str,
+    client: httpx.AsyncClient | None = None,
+    *,
+    today: date | None = None,
+) -> provider_result.ProviderResult:
+    """Fetch a series' books with release dates, for the release radar.
+
+    Returns a `ProviderResult` (`provider="hardcover"`), by exit path:
+      * no token: `no_credential`, with no request made.
+      * shape 1 (`book_series` filtered by series name) `found` with rows:
+        `found(payload=parsed rows)`. A series whose rows all filter away
+        is still `found([])`: the series exists, it has no usable rows.
+      * shape 1 `no_match` (a GraphQL `errors` body, or no rows): try shape 2
+        (`series { book_series }`). Shape 2 `found` with a series row is
+        `found(parsed)`; `found([])` when that series has no rows left.
+      * both shapes `no_match`: `no_match`.
+      * any other outcome (`rejected`, `rate_limited`, `transport_failed`,
+        `no_credential`) from either shape is returned as-is, and no further
+        call follows it.
+    `_graphql_outcome` catches every request and parse error itself, and the
+    parsing here runs on already-decoded data, so nothing raises on a bad
+    response body.
+    """
+    today = today or date.today()
+    book_fields = """
+          book {
+            id
+            title
+            release_date
+            release_year
+            cached_image
+            canonical_id
+            compilation
+            users_count
+            contributions { author { name } }
+          }
+    """
+
+    query_root = f"""
+    query ($name: String!) {{
+      book_series(
+        where: {{ series: {{ name: {{ _eq: $name }} }} }},
+        order_by: {{ position: asc }},
+        limit: 100
+      ) {{
+          position
+          {book_fields}
+      }}
+    }}
+    """
+    first = await _graphql_outcome(query_root, {"name": series_name}, token=token, client=client)
+    if first.found and (first.payload or {}).get("book_series"):
+        return first.with_payload(_parse_series_upcoming(first.payload["book_series"], today))
+    if first.outcome not in ("found", "no_match"):
+        return first
+
+    query_fallback = f"""
+    query ($name: String!) {{
+      series(where: {{ name: {{ _eq: $name }} }}, limit: 1) {{
+        name
+        book_series(order_by: {{ position: asc }}, limit: 100) {{
+          position
+          {book_fields}
+        }}
+      }}
+    }}
+    """
+    second = await _graphql_outcome(query_fallback, {"name": series_name}, token=token, client=client)
+    if second.found:
+        rows = (second.payload or {}).get("series") or []
+        if rows:
+            entries = (rows[0] or {}).get("book_series") or []
+            return second.with_payload(_parse_series_upcoming(entries, today))
+        return provider_result.no_match("hardcover", status=second.status)
+    return second
 
 
 async def get_series_description(series_name: str, token: str, client: httpx.AsyncClient | None = None) -> str | None:

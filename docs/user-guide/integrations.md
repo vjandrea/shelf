@@ -13,7 +13,9 @@ alternative with an excellent data model.
 **Adds:** bidirectional reading-status sync, richer metadata and synopses on
 lookup, series completeness checks and one-click "add missing volumes to
 wishlist", import of your Hardcover library, export of your Shelf library to
-Hardcover, and the **Discover** tab (recommendations).
+Hardcover, the **Discover** tab (recommendations), and the **release radar**
+— watch a series and get a daily digest when a new volume is announced (see
+[Series](series.md#watching-for-new-volumes)).
 
 **Setup:** Hardcover → Settings → API → copy the token → paste into the
 Hardcover card. Choose a sync schedule for reading status; run **Import
@@ -190,9 +192,11 @@ Anthropic, any OpenAI-compatible endpoint, or Ollama. See
 ## Notifications (ntfy / webhook)
 
 Not an integration card — lives under Settings → Library → Lending — but the
-same idea: an ntfy topic or JSON webhook URL for the overdue-loan digest and
-the wishlist price-drop digest. See [Lending](lending.md#reminders) and
-[Price alerts](wishlist-and-store-mode.md#price-alerts).
+same idea: an ntfy topic or JSON webhook URL for the overdue-loan digest, the
+wishlist price-drop digest and the release-radar digest. See
+[Lending](lending.md#reminders),
+[Price alerts](wishlist-and-store-mode.md#price-alerts) and
+[Series](series.md#watching-for-new-volumes).
 
 ## Always-on sources (no key)
 

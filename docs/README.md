@@ -34,7 +34,7 @@ New here? Start with **[Installation](installation.md)**, then
 | [Shelf Fill](user-guide/shelf-fill.md) | Rapid placement: keep a shelf selected and scan items onto it one after another |
 | [Copy labels](user-guide/labels.md) | Barcodes for individual copies: assigning codes, printing Avery label sheets, what each Scan mode does with one |
 | [Audits](user-guide/audits.md) | Shelf and whole-library audits from Scan → Inventory: the report, marking copies missing, what clears a mark |
-| [Series](user-guide/series.md) | Series page, gaps, Hardcover completeness checks, rename/merge/disband |
+| [Series](user-guide/series.md) | Series page, gaps, Hardcover completeness checks, release radar (watched series, upcoming releases), rename/merge/disband |
 | [Lending](user-guide/lending.md) | Borrowers, Lend/Return modes, overdue tracking, reminder notifications |
 | [Wishlist & Store Mode](user-guide/wishlist-and-store-mode.md) | Building a wishlist; price alerts; the offline bookstore PWA |
 | [Sharing](user-guide/sharing.md) | Public read-only wishlist and collection links |

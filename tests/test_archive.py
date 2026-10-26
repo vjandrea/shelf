@@ -3565,6 +3565,26 @@ class TestArchiveUploadReadsAreBounded:
         assert calls == [MAX_IMPORT_UPLOAD_SIZE + 1]
 
 
+class TestReleaseRadarStaysOut:
+    """Release watches and upcoming releases are user-owned state the portable
+    archive does not carry (G147; docs/upgrading-and-backups.md names the gap)."""
+
+    def test_neither_table_appears_in_the_archive(self, db):
+        db.execute("INSERT INTO release_watches (series_name) VALUES ('Dune')")
+        watch_id = db.execute("SELECT id FROM release_watches").fetchone()[0]
+        db.execute(
+            "INSERT INTO upcoming_releases (watch_id, hc_book_id, title)"
+            " VALUES (?, 1, 'Dune Messiah Unreleased')",
+            (watch_id,),
+        )
+        db.execute("COMMIT")
+        with zipfile.ZipFile(build_archive(db)) as zf:
+            raw = b"".join(zf.read(n) for n in zf.namelist()).decode(errors="replace")
+        assert "release_watches" not in raw
+        assert "upcoming_releases" not in raw
+        assert "Dune Messiah Unreleased" not in raw
+
+
 class TestPriceHistoryStaysOut:
     """Price-alert history is an observation cache for one feature, not part
     of the catalog: the portable archive neither exports nor imports it, and

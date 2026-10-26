@@ -37,6 +37,8 @@ document.addEventListener('alpine:init', function () {
             // Hardcover check. Both arrive as data-* attributes; '' means
             // "unknown", which is not the same as 0 or false.
             complete: false, hcMissing: null, hcCheckedAt: '', markingComplete: false,
+            // Release radar: whether this series is watched for new volumes.
+            watched: false, watchState: '', watching: false,
             init() {
                 rootEl = this.$el;
                 this.seriesName = this.$el.dataset.seriesName || '';
@@ -47,6 +49,8 @@ document.addEventListener('alpine:init', function () {
                 this.hcMissing = missing === '' || missing === undefined
                     ? null : parseInt(missing, 10);
                 this.hcCheckedAt = this.$el.dataset.hcCheckedAt || '';
+                this.watched = this.$el.dataset.watched === '1';
+                this.watchState = this.$el.dataset.watchState || '';
                 // The page renders one shared <datalist> of every series name
                 // (series.html); reuse it rather than repeating the list on
                 // every card as a data-* attribute.
@@ -76,6 +80,34 @@ document.addEventListener('alpine:init', function () {
             get completeLabel() {
                 if (this.markingComplete) return 'Saving…';
                 return this.complete ? 'Unmark complete' : 'Mark complete';
+            },
+            get watchLabel() {
+                if (this.watching) return 'Saving…';
+                return this.watched ? 'Watching' : 'Watch for new volumes';
+            },
+            get watchPressed() {
+                return this.watched ? 'true' : 'false';
+            },
+            toggleWatch() {
+                this.watching = true;
+                var self = this;
+                var body = new URLSearchParams();
+                body.set('watch', this.watched ? '0' : '1');
+                fetch('/api/series/' + encodeURIComponent(this.seriesName) + '/watch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': window.csrfToken() },
+                    body: body.toString()
+                })
+                    .then(r => r.json())
+                    .then(d => {
+                        self.watching = false;
+                        if (!d.ok) { showToast(d.message || 'Failed', 'error'); return; }
+                        self.watched = d.watched;
+                        showToast(d.watched ? 'Watching for new volumes' : 'Stopped watching');
+                        // Reload so the not-found line and the filter read fresh state.
+                        setTimeout(() => location.reload(), 600);
+                    })
+                    .catch(() => { self.watching = false; showToast('Failed', 'error'); });
             },
             toggleComplete() {
                 this.markingComplete = true;
@@ -279,6 +311,42 @@ document.addEventListener('alpine:init', function () {
                     .then(r => r.json())
                     .then(d => { if (d.ok || d.item_id) { this.added[b.hardcover_book_id] = true; showToast(d.restored ? 'Restored from Trash' : 'Added to wishlist'); } else { showToast(d.message || 'Failed', 'error'); } })
                     .catch(() => showToast('Failed', 'error'));
+            }
+        };
+    });
+
+    // upcoming.html — one announced volume. + Wishlist sends exactly the
+    // payload seriesCard.addToWishlist does, read off this row's own data-*
+    // (G91), then reloads so the now-held row drops off the page.
+    Alpine.data('upcomingRow', function () {
+        var rootEl = null;
+        return {
+            busy: false,
+            init() {
+                rootEl = this.$el;
+            },
+            addToWishlist() {
+                var self = this;
+                if (!rootEl) return;
+                var d = rootEl.dataset;
+                var pos = d.seriesPosition === '' ? null : Number(d.seriesPosition);
+                self.busy = true;
+                fetch('/api/hardcover/add-to-shelf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.csrfToken() },
+                    body: JSON.stringify({ title: d.title, authors: d.authors || null, cover_url: d.coverUrl || null, hardcover_book_id: Number(d.hardcoverBookId), series_name: d.seriesName, series_position: pos })
+                })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.ok || res.item_id) {
+                            showToast(res.restored ? 'Restored from Trash' : 'Added to wishlist');
+                            window.location.reload();
+                        } else {
+                            self.busy = false;
+                            showToast(res.message || 'Failed', 'error');
+                        }
+                    })
+                    .catch(() => { self.busy = false; showToast('Failed', 'error'); });
             }
         };
     });
