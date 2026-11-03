@@ -582,6 +582,14 @@ msgstr "Das hat nicht geklappt ({why}) – lade die Seite neu und versuche es no
 msgid "Merge {count} records into \"{title}\"? The merged-away records cannot be restored."
 msgstr "{count} Datensätze in „{title}“ zusammenführen? Die zusammengeführten Datensätze lassen sich nicht wiederherstellen."
 
+#: static/js/intake-capture.js:78
+msgid "No live camera stream to grab a frame from."
+msgstr ""
+
+#: static/js/intake-capture.js:88
+msgid "Failed to encode captured frame as JPEG."
+msgstr ""
+
 #: static/js/intake.js:186
 msgid "No camera found. Use Choose photo instead."
 msgstr "Keine Kamera gefunden. Nutze stattdessen Foto auswählen."
@@ -631,6 +639,10 @@ msgstr "Halte die Kamera auf einen EAN-13- oder UPC-A-Barcode."
 #: static/js/item_edit.js:158
 msgid "That is not a valid UPC-A / EAN-13 retail barcode. Try again."
 msgstr "Das ist kein gültiger EAN-13- / UPC-A-Barcode. Versuch es noch einmal."
+
+#: static/js/komga-item.js:25
+msgid "Open in Komga"
+msgstr ""
 
 #: static/js/komga-settings.js:40 static/js/romm-settings.js:36
 msgid "Saved — leave blank to keep"
@@ -714,6 +726,10 @@ msgstr "Regal-Reihenfolge gespeichert."
 #: static/js/location-order.js:81
 msgid "Ordering…"
 msgstr "Wird sortiert …"
+
+#: static/js/romm-item.js:25
+msgid "Open in RomM"
+msgstr ""
 
 #: static/js/romm-settings.js:36
 msgid "RomM client API token"

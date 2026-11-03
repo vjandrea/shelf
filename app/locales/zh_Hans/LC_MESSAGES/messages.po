@@ -616,11 +616,30 @@ msgstr "已有 %(max)s 个令牌，请先撤销一个"
 msgid "Token not found"
 msgstr "找不到该令牌"
 
+#: app/routers/archive.py:96 app/routers/archive.py:135
+#: app/routers/archive.py:184
+msgid "Invalid import mode"
+msgstr ""
+
+#: app/routers/archive.py:101 app/routers/archive.py:139
+#: app/routers/items_csv.py:111 app/routers/settings.py:490
+msgid "No file uploaded"
+msgstr ""
+
+#: app/routers/archive.py:198
+msgid "This plan was reviewed under a different mode — preview it again."
+msgstr ""
+
+#: app/routers/audits.py:286
+msgid "Audit not found"
+msgstr ""
+
 #: app/routers/auth_routes.py:56 app/routers/auth_routes.py:63
 msgid "Invalid username or password"
 msgstr "用户名或密码错误"
 
-#: app/routers/auth_routes.py:121
+#: app/routers/auth_routes.py:121 app/routers/auth_routes.py:180
+#: app/routers/auth_routes.py:238
 msgid "Password must be at least 8 characters"
 msgstr "密码至少需要 8 个字符"
 
@@ -629,13 +648,43 @@ msgstr "密码至少需要 8 个字符"
 msgid "Passwords do not match"
 msgstr "两次输入的密码不一致"
 
-#: app/routers/auth_routes.py:125
+#: app/routers/auth_routes.py:125 app/routers/auth_routes.py:182
 msgid "Username must be at least 2 characters"
 msgstr "用户名至少需要 2 个字符"
 
 #: app/routers/auth_routes.py:127
 msgid "Choose how much of Shelf to start with"
 msgstr "请选择 Shelf 的初始功能档位"
+
+#: app/routers/auth_routes.py:178 app/routers/auth_routes.py:207
+msgid "Invalid role"
+msgstr ""
+
+#: app/routers/auth_routes.py:193
+msgid "Username already exists"
+msgstr ""
+
+#: app/routers/auth_routes.py:196
+#, python-format
+msgid "User '%(name)s' created"
+msgstr ""
+
+#: app/routers/auth_routes.py:213 app/routers/auth_routes.py:244
+#: app/routers/auth_routes.py:348
+msgid "User not found"
+msgstr ""
+
+#: app/routers/auth_routes.py:219
+msgid "Cannot demote the last admin"
+msgstr ""
+
+#: app/routers/auth_routes.py:227
+msgid "Role updated — user's sessions have been invalidated"
+msgstr ""
+
+#: app/routers/auth_routes.py:251
+msgid "Password updated — user's sessions have been invalidated"
+msgstr ""
 
 #: app/routers/auth_routes.py:264
 msgid "New password must be at least 8 characters"
@@ -661,15 +710,28 @@ msgstr "显示名称已更新"
 msgid "Unknown language"
 msgstr "未知语言"
 
+#: app/routers/auth_routes.py:343
+msgid "Cannot delete your own account"
+msgstr ""
+
+#: app/routers/auth_routes.py:353
+msgid "Cannot delete the last admin"
+msgstr ""
+
+#: app/routers/auth_routes.py:364
+msgid "User deleted"
+msgstr ""
+
 #: app/routers/checkouts.py:126
 msgid "Due date is out of range"
 msgstr "应还日期超出范围"
 
 #: app/routers/checkouts.py:137 app/routers/hardcover.py:250
 #: app/routers/item_copies.py:174 app/routers/item_copies.py:231
-#: app/routers/items_catalog.py:544 app/routers/related_media.py:44
-#: app/routers/related_media.py:80 app/routers/related_media.py:103
-#: app/routers/related_media.py:120
+#: app/routers/items.py:1408 app/routers/items_catalog.py:544
+#: app/routers/related_media.py:44 app/routers/related_media.py:80
+#: app/routers/related_media.py:103 app/routers/related_media.py:120
+#: app/routers/tags.py:120 app/routers/tags.py:136
 msgid "Item not found"
 msgstr "未找到条目"
 
@@ -684,6 +746,16 @@ msgstr "未找到借出记录"
 #: app/routers/checkouts.py:170 app/routers/checkouts.py:179
 msgid "Checkout already checked in"
 msgstr "该借出记录已归还"
+
+#: app/routers/cover_review.py:254 app/routers/cover_review_actions.py:66
+#: app/routers/cover_review_actions.py:125
+#: app/routers/cover_review_actions.py:184 app/routers/items.py:904
+#: app/routers/items.py:1216 app/routers/items.py:1314
+#: app/routers/items_covers.py:177 app/routers/items_covers.py:238
+#: app/routers/items_covers.py:276 app/routers/items_covers.py:311
+#: app/routers/items_covers.py:363 app/routers/share.py:36
+msgid "Not found"
+msgstr ""
 
 #: app/routers/hardcover.py:46
 msgid "No token provided"
@@ -819,7 +891,8 @@ msgstr "无效的出版年份"
 msgid "No items or updates specified"
 msgstr "未指定条目或更新内容"
 
-#: app/routers/items.py:1006 app/routers/tags.py:71 app/routers/tags.py:76
+#: app/routers/items.py:1006 app/routers/items.py:1066 app/routers/tags.py:71
+#: app/routers/tags.py:76
 msgid "Invalid item IDs"
 msgstr "无效的条目 ID"
 
@@ -851,6 +924,18 @@ msgstr ""
 #: app/routers/items.py:1129
 #, python-format
 msgid "Cannot merge \"%(title)s\" (#%(id)s): %(reason)s"
+msgstr ""
+
+#: app/routers/items.py:1422
+msgid "No synopsis found"
+msgstr ""
+
+#: app/routers/items.py:1478
+msgid "Synopsis backfill failed — check server logs"
+msgstr ""
+
+#: app/routers/items.py:1541
+msgid "Both Client ID and Client Secret are required"
 msgstr ""
 
 #: app/routers/items_catalog.py:92
@@ -914,13 +999,13 @@ msgstr "无 ISBN"
 msgid "No cover found"
 msgstr "未找到封面"
 
+#: app/routers/items_covers.py:471
+msgid "Cover retry failed — check server logs"
+msgstr ""
+
 #: app/routers/items_csv.py:102
 #, python-format
 msgid "Unknown import mode '%(mode)s' (use skip or update)"
-msgstr ""
-
-#: app/routers/items_csv.py:111 app/routers/settings.py:490
-msgid "No file uploaded"
 msgstr ""
 
 #: app/routers/items_csv.py:115
@@ -1048,6 +1133,14 @@ msgstr ""
 msgid "Komga sync failed — check server logs"
 msgstr ""
 
+#: app/routers/labels.py:45
+msgid "Unknown scope"
+msgstr ""
+
+#: app/routers/labels.py:97
+msgid "Choose a location"
+msgstr ""
+
 #: app/routers/location_order.py:66
 msgid "Invalid copy order"
 msgstr ""
@@ -1093,8 +1186,16 @@ msgstr ""
 msgid "Discogs did not return a concrete release"
 msgstr ""
 
+#: app/routers/periodicals.py:107
+msgid "Not a valid periodical barcode"
+msgstr ""
+
 #: app/routers/periodicals.py:120
 msgid "This periodical issue is already in the collection"
+msgstr ""
+
+#: app/routers/periodicals.py:261
+msgid "A valid periodical barcode and publication title are required"
 msgstr ""
 
 #: app/routers/related_media.py:99
@@ -1315,10 +1416,6 @@ msgstr ""
 msgid "Database restored. All sessions invalidated. Restart the container to apply."
 msgstr ""
 
-#: app/routers/share.py:36
-msgid "Not found"
-msgstr ""
-
 #: app/routers/share.py:71
 msgid "Invalid share scope"
 msgstr ""
@@ -1338,6 +1435,10 @@ msgstr "该条目已不存在"
 #: app/routers/shelf_fill.py:266
 msgid "Enter or scan a barcode"
 msgstr "请输入条码或扫码"
+
+#: app/routers/store.py:160
+msgid "Invalid JSON body"
+msgstr ""
 
 #: app/routers/sync.py:40 app/routers/sync.py:46 app/routers/sync.py:117
 #: app/routers/sync.py:121 app/routers/valuation.py:36
@@ -1406,6 +1507,14 @@ msgstr "已为 %(count)s 个条目添加标签 %(tags)s"
 msgid "Removed %(tags)s from %(count)s item(s)"
 msgstr "已从 %(count)s 个条目移除标签 %(tags)s"
 
+#: app/routers/tags.py:110
+msgid "Tag name required"
+msgstr ""
+
+#: app/routers/tags.py:140
+msgid "Tag not found on item"
+msgstr ""
+
 #: app/routers/trash.py:113
 msgid "That item no longer exists"
 msgstr ""
@@ -1432,6 +1541,10 @@ msgstr ""
 
 #: app/routers/valuation.py:128
 msgid "No price found"
+msgstr ""
+
+#: app/routers/valuation.py:247
+msgid "Valuation failed — check server logs"
 msgstr ""
 
 #: app/services/audits.py:68
@@ -4539,8 +4652,19 @@ msgid "Print these labels"
 msgstr ""
 
 #: app/templates/fragments/labels_assigned.html:6
+#: app/templates/fragments/labels_count.html:1
 msgid "Nothing to assign &mdash; every copy here has a barcode."
 msgstr ""
+
+#: app/templates/fragments/labels_count.html:1
+msgid "Choose a location."
+msgstr ""
+
+#: app/templates/fragments/labels_count.html:1
+#, python-format
+msgid "%(num)s copy would get a code."
+msgid_plural "%(num)s copies would get a code."
+msgstr[0] ""
 
 #: app/templates/fragments/labels_scope.html:5
 msgid "Which copies"

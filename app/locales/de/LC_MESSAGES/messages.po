@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"PO-Revision-Date: 2026-11-25 13:16-0500\n"
+"PO-Revision-Date: 2026-11-26 09:55+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
 "Language-Team: de <LL@li.org>\n"
@@ -616,11 +616,30 @@ msgstr "Du hast schon %(max)s Tokens – widerrufe zuerst eines"
 msgid "Token not found"
 msgstr "Token nicht gefunden"
 
+#: app/routers/archive.py:96 app/routers/archive.py:135
+#: app/routers/archive.py:184
+msgid "Invalid import mode"
+msgstr ""
+
+#: app/routers/archive.py:101 app/routers/archive.py:139
+#: app/routers/items_csv.py:111 app/routers/settings.py:490
+msgid "No file uploaded"
+msgstr ""
+
+#: app/routers/archive.py:198
+msgid "This plan was reviewed under a different mode — preview it again."
+msgstr ""
+
+#: app/routers/audits.py:286
+msgid "Audit not found"
+msgstr ""
+
 #: app/routers/auth_routes.py:56 app/routers/auth_routes.py:63
 msgid "Invalid username or password"
 msgstr "Benutzername oder Passwort ist falsch"
 
-#: app/routers/auth_routes.py:121
+#: app/routers/auth_routes.py:121 app/routers/auth_routes.py:180
+#: app/routers/auth_routes.py:238
 msgid "Password must be at least 8 characters"
 msgstr "Das Passwort muss mindestens 8 Zeichen haben"
 
@@ -629,13 +648,43 @@ msgstr "Das Passwort muss mindestens 8 Zeichen haben"
 msgid "Passwords do not match"
 msgstr "Die Passwörter stimmen nicht überein"
 
-#: app/routers/auth_routes.py:125
+#: app/routers/auth_routes.py:125 app/routers/auth_routes.py:182
 msgid "Username must be at least 2 characters"
 msgstr "Der Benutzername muss mindestens 2 Zeichen haben"
 
 #: app/routers/auth_routes.py:127
 msgid "Choose how much of Shelf to start with"
 msgstr "Wähle, mit welchem Umfang du Shelf startest"
+
+#: app/routers/auth_routes.py:178 app/routers/auth_routes.py:207
+msgid "Invalid role"
+msgstr ""
+
+#: app/routers/auth_routes.py:193
+msgid "Username already exists"
+msgstr ""
+
+#: app/routers/auth_routes.py:196
+#, python-format
+msgid "User '%(name)s' created"
+msgstr ""
+
+#: app/routers/auth_routes.py:213 app/routers/auth_routes.py:244
+#: app/routers/auth_routes.py:348
+msgid "User not found"
+msgstr ""
+
+#: app/routers/auth_routes.py:219
+msgid "Cannot demote the last admin"
+msgstr ""
+
+#: app/routers/auth_routes.py:227
+msgid "Role updated — user's sessions have been invalidated"
+msgstr ""
+
+#: app/routers/auth_routes.py:251
+msgid "Password updated — user's sessions have been invalidated"
+msgstr ""
 
 #: app/routers/auth_routes.py:264
 msgid "New password must be at least 8 characters"
@@ -661,15 +710,28 @@ msgstr "Anzeigename gespeichert"
 msgid "Unknown language"
 msgstr "Unbekannte Sprache"
 
+#: app/routers/auth_routes.py:343
+msgid "Cannot delete your own account"
+msgstr ""
+
+#: app/routers/auth_routes.py:353
+msgid "Cannot delete the last admin"
+msgstr ""
+
+#: app/routers/auth_routes.py:364
+msgid "User deleted"
+msgstr ""
+
 #: app/routers/checkouts.py:126
 msgid "Due date is out of range"
 msgstr "Das Rückgabedatum liegt außerhalb des gültigen Bereichs"
 
 #: app/routers/checkouts.py:137 app/routers/hardcover.py:250
 #: app/routers/item_copies.py:174 app/routers/item_copies.py:231
-#: app/routers/items_catalog.py:544 app/routers/related_media.py:44
-#: app/routers/related_media.py:80 app/routers/related_media.py:103
-#: app/routers/related_media.py:120
+#: app/routers/items.py:1408 app/routers/items_catalog.py:544
+#: app/routers/related_media.py:44 app/routers/related_media.py:80
+#: app/routers/related_media.py:103 app/routers/related_media.py:120
+#: app/routers/tags.py:120 app/routers/tags.py:136
 msgid "Item not found"
 msgstr "Eintrag nicht gefunden"
 
@@ -684,6 +746,16 @@ msgstr "Ausleihe nicht gefunden"
 #: app/routers/checkouts.py:170 app/routers/checkouts.py:179
 msgid "Checkout already checked in"
 msgstr "Ausleihe wurde schon zurückgegeben"
+
+#: app/routers/cover_review.py:254 app/routers/cover_review_actions.py:66
+#: app/routers/cover_review_actions.py:125
+#: app/routers/cover_review_actions.py:184 app/routers/items.py:904
+#: app/routers/items.py:1216 app/routers/items.py:1314
+#: app/routers/items_covers.py:177 app/routers/items_covers.py:238
+#: app/routers/items_covers.py:276 app/routers/items_covers.py:311
+#: app/routers/items_covers.py:363 app/routers/share.py:36
+msgid "Not found"
+msgstr "Nicht gefunden"
 
 #: app/routers/hardcover.py:46
 msgid "No token provided"
@@ -819,7 +891,8 @@ msgstr "Ungültiges Erscheinungsjahr"
 msgid "No items or updates specified"
 msgstr "Keine Einträge oder Änderungen angegeben"
 
-#: app/routers/items.py:1006 app/routers/tags.py:71 app/routers/tags.py:76
+#: app/routers/items.py:1006 app/routers/items.py:1066 app/routers/tags.py:71
+#: app/routers/tags.py:76
 msgid "Invalid item IDs"
 msgstr "Ungültige Eintrags-IDs"
 
@@ -852,6 +925,18 @@ msgstr "Einträge, die beide verliehen sind, können nicht zusammengeführt werd
 #, python-format
 msgid "Cannot merge \"%(title)s\" (#%(id)s): %(reason)s"
 msgstr "„%(title)s“ (#%(id)s) kann nicht zusammengeführt werden: %(reason)s"
+
+#: app/routers/items.py:1422
+msgid "No synopsis found"
+msgstr ""
+
+#: app/routers/items.py:1478
+msgid "Synopsis backfill failed — check server logs"
+msgstr ""
+
+#: app/routers/items.py:1541
+msgid "Both Client ID and Client Secret are required"
+msgstr ""
 
 #: app/routers/items_catalog.py:92
 msgid "Unrecognised game platform — pick one and try again"
@@ -915,13 +1000,13 @@ msgstr "Keine ISBN"
 msgid "No cover found"
 msgstr "Kein Cover gefunden"
 
+#: app/routers/items_covers.py:471
+msgid "Cover retry failed — check server logs"
+msgstr ""
+
 #: app/routers/items_csv.py:102
 #, python-format
 msgid "Unknown import mode '%(mode)s' (use skip or update)"
-msgstr ""
-
-#: app/routers/items_csv.py:111 app/routers/settings.py:490
-msgid "No file uploaded"
 msgstr ""
 
 #: app/routers/items_csv.py:115
@@ -1049,6 +1134,14 @@ msgstr ""
 msgid "Komga sync failed — check server logs"
 msgstr ""
 
+#: app/routers/labels.py:45
+msgid "Unknown scope"
+msgstr ""
+
+#: app/routers/labels.py:97
+msgid "Choose a location"
+msgstr ""
+
 #: app/routers/location_order.py:66
 msgid "Invalid copy order"
 msgstr "Ungültige Reihenfolge der Exemplare"
@@ -1094,9 +1187,17 @@ msgstr ""
 msgid "Discogs did not return a concrete release"
 msgstr ""
 
+#: app/routers/periodicals.py:107
+msgid "Not a valid periodical barcode"
+msgstr ""
+
 #: app/routers/periodicals.py:120
 msgid "This periodical issue is already in the collection"
 msgstr "Diese Zeitschriftenausgabe ist schon in der Sammlung"
+
+#: app/routers/periodicals.py:261
+msgid "A valid periodical barcode and publication title are required"
+msgstr ""
 
 #: app/routers/related_media.py:99
 msgid "An item cannot be related to itself"
@@ -1316,10 +1417,6 @@ msgstr ""
 msgid "Database restored. All sessions invalidated. Restart the container to apply."
 msgstr ""
 
-#: app/routers/share.py:36
-msgid "Not found"
-msgstr "Nicht gefunden"
-
 #: app/routers/share.py:71
 msgid "Invalid share scope"
 msgstr "Ungültiger Freigabeumfang"
@@ -1339,6 +1436,10 @@ msgstr "Der Eintrag existiert nicht mehr"
 #: app/routers/shelf_fill.py:266
 msgid "Enter or scan a barcode"
 msgstr "Barcode eingeben oder scannen"
+
+#: app/routers/store.py:160
+msgid "Invalid JSON body"
+msgstr ""
 
 #: app/routers/sync.py:40 app/routers/sync.py:46 app/routers/sync.py:117
 #: app/routers/sync.py:121 app/routers/valuation.py:36
@@ -1407,6 +1508,14 @@ msgstr "%(tags)s zu %(count)s Eintrag/Einträgen hinzugefügt"
 msgid "Removed %(tags)s from %(count)s item(s)"
 msgstr "%(tags)s von %(count)s Eintrag/Einträgen entfernt"
 
+#: app/routers/tags.py:110
+msgid "Tag name required"
+msgstr ""
+
+#: app/routers/tags.py:140
+msgid "Tag not found on item"
+msgstr ""
+
 #: app/routers/trash.py:113
 msgid "That item no longer exists"
 msgstr "Dieser Eintrag existiert nicht mehr"
@@ -1434,6 +1543,10 @@ msgstr "ISBNdb-API-Schlüssel nicht eingerichtet"
 #: app/routers/valuation.py:128
 msgid "No price found"
 msgstr "Kein Preis gefunden"
+
+#: app/routers/valuation.py:247
+msgid "Valuation failed — check server logs"
+msgstr ""
 
 #: app/services/audits.py:68
 #, python-format
@@ -4553,8 +4666,20 @@ msgid "Print these labels"
 msgstr "Diese Etiketten drucken"
 
 #: app/templates/fragments/labels_assigned.html:6
+#: app/templates/fragments/labels_count.html:1
 msgid "Nothing to assign &mdash; every copy here has a barcode."
 msgstr "Nichts zu vergeben &mdash; jedes Exemplar hier hat einen Barcode."
+
+#: app/templates/fragments/labels_count.html:1
+msgid "Choose a location."
+msgstr ""
+
+#: app/templates/fragments/labels_count.html:1
+#, python-format
+msgid "%(num)s copy would get a code."
+msgid_plural "%(num)s copies would get a code."
+msgstr[0] ""
+msgstr[1] ""
 
 #: app/templates/fragments/labels_scope.html:5
 msgid "Which copies"
