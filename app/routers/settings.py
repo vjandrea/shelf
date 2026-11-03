@@ -480,18 +480,18 @@ async def restore_backup(request: Request):
     form = await request.form()
     db_file = form.get("file")
     if not db_file or not hasattr(db_file, "read"):
-        return {"ok": False, "message": "No file uploaded"}
+        return {"ok": False, "message": i18n.gettext("No file uploaded")}
 
     content = await db_file.read()
     max_db_size = 500 * 1024 * 1024  # 500 MB
     if len(content) > max_db_size:
-        return {"ok": False, "message": "File too large (max 500 MB)"}
+        return {"ok": False, "message": i18n.gettext("File too large (max 500 MB)")}
 
     from app.crypto import is_encrypted_backup, decrypt_backup
     if is_encrypted_backup(content):
         passphrase = (form.get("passphrase") or "").strip()
         if not passphrase:
-            return {"ok": False, "message": "This backup is encrypted — enter its passphrase"}
+            return {"ok": False, "message": i18n.gettext("This backup is encrypted — enter its passphrase")}
         try:
             content = decrypt_backup(content, passphrase)
         except ValueError as e:
@@ -518,7 +518,7 @@ async def restore_backup(request: Request):
         if triggers:
             conn.close()
             tmp_path.unlink(missing_ok=True)
-            return {"ok": False, "message": "Database contains triggers — not allowed"}
+            return {"ok": False, "message": i18n.gettext("Database contains triggers — not allowed")}
 
         # Reject databases with views (could embed malicious SQL)
         views = conn.execute(
@@ -527,7 +527,7 @@ async def restore_backup(request: Request):
         if views:
             conn.close()
             tmp_path.unlink(missing_ok=True)
-            return {"ok": False, "message": "Database contains views — not allowed"}
+            return {"ok": False, "message": i18n.gettext("Database contains views — not allowed")}
 
         # Reject virtual tables (their module code runs on access)
         vtables = conn.execute(
@@ -537,14 +537,14 @@ async def restore_backup(request: Request):
         if vtables:
             conn.close()
             tmp_path.unlink(missing_ok=True)
-            return {"ok": False, "message": "Database contains virtual tables — not allowed"}
+            return {"ok": False, "message": i18n.gettext("Database contains virtual tables — not allowed")}
 
         # Reject databases with attached databases
         dbs = conn.execute("PRAGMA database_list").fetchall()
         if len(dbs) > 1:
             conn.close()
             tmp_path.unlink(missing_ok=True)
-            return {"ok": False, "message": "Database has attached databases — not allowed"}
+            return {"ok": False, "message": i18n.gettext("Database has attached databases — not allowed")}
 
         # Verify all required tables exist
         existing_tables = {
@@ -559,7 +559,7 @@ async def restore_backup(request: Request):
             tmp_path.unlink(missing_ok=True)
             return {
                 "ok": False,
-                "message": f"Not a valid Shelf database (missing tables: {', '.join(sorted(missing_tables))})",
+                "message": i18n.gettext("Not a valid Shelf database (missing tables: %(tables)s)") % {"tables": ", ".join(sorted(missing_tables))},
             }
 
         # Verify required columns on each critical table
@@ -574,13 +574,13 @@ async def restore_backup(request: Request):
                 tmp_path.unlink(missing_ok=True)
                 return {
                     "ok": False,
-                    "message": f"Incompatible schema: '{table}' table is missing columns: {', '.join(sorted(missing_cols))}",
+                    "message": i18n.gettext("Incompatible schema: '%(table)s' table is missing columns: %(columns)s") % {"table": table, "columns": ", ".join(sorted(missing_cols))},
                 }
 
         conn.close()
     except Exception:
         tmp_path.unlink(missing_ok=True)
-        return {"ok": False, "message": "Invalid database file — must be a valid Shelf SQLite database"}
+        return {"ok": False, "message": i18n.gettext("Invalid database file — must be a valid Shelf SQLite database")}
 
     # Replace the current database through SQLite, not the filesystem.
     #
@@ -634,4 +634,4 @@ async def restore_backup(request: Request):
     invalidate_nav_cache()  # the restored DB carries its own settings
     features.invalidate_cache()  # ...including its own feature.* rows
 
-    return {"ok": True, "message": "Database restored. All sessions invalidated. Restart the container to apply."}
+    return {"ok": True, "message": i18n.gettext("Database restored. All sessions invalidated. Restart the container to apply.")}
