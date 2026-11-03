@@ -175,11 +175,11 @@ async def create_user(
     username = username.strip()
     display_name = display_name.strip() or username
     if role not in ("admin", "editor", "viewer"):
-        return {"ok": False, "message": "Invalid role"}
+        return {"ok": False, "message": i18n.gettext("Invalid role")}
     if len(password) < 8:
-        return {"ok": False, "message": "Password must be at least 8 characters"}
+        return {"ok": False, "message": i18n.gettext("Password must be at least 8 characters")}
     if not username or len(username) < 2:
-        return {"ok": False, "message": "Username must be at least 2 characters"}
+        return {"ok": False, "message": i18n.gettext("Username must be at least 2 characters")}
 
     hashed = await run_in_threadpool(hash_password, password)
     try:
@@ -190,10 +190,10 @@ async def create_user(
             )
     except sqlite3.IntegrityError:
         logger.warning("Failed to create user '%s': username already exists", username)
-        return {"ok": False, "message": "Username already exists"}
+        return {"ok": False, "message": i18n.gettext("Username already exists")}
 
     logger.info("User '%s' created with role '%s'", username, role)
-    return {"ok": True, "message": f"User '{username}' created"}
+    return {"ok": True, "message": i18n.gettext("User '%(name)s' created") % {"name": username}}
 
 
 @router.post("/api/users/{user_id}/role")
@@ -204,19 +204,19 @@ async def update_user_role(
     _=Depends(require_role("admin")),
 ):
     if role not in ("admin", "editor", "viewer"):
-        return {"ok": False, "message": "Invalid role"}
+        return {"ok": False, "message": i18n.gettext("Invalid role")}
 
     current_user = request.state.user
     with get_db() as db:
         target = db.execute("SELECT id, role FROM users WHERE id = ?", (user_id,)).fetchone()
         if not target:
-            return {"ok": False, "message": "User not found"}
+            return {"ok": False, "message": i18n.gettext("User not found")}
 
         # Prevent demoting the last admin
         if target["role"] == "admin" and role != "admin":
             admin_count = db.execute("SELECT COUNT(*) as cnt FROM users WHERE role = 'admin'").fetchone()["cnt"]
             if admin_count <= 1:
-                return {"ok": False, "message": "Cannot demote the last admin"}
+                return {"ok": False, "message": i18n.gettext("Cannot demote the last admin")}
 
         db.execute(
             "UPDATE users SET role = ?, token_version = token_version + 1, updated_at = datetime('now') WHERE id = ?",
@@ -224,7 +224,7 @@ async def update_user_role(
         )
 
     logger.info("User id=%d role changed to '%s' by user '%s'", user_id, role, current_user["username"])
-    return {"ok": True, "message": "Role updated — user's sessions have been invalidated"}
+    return {"ok": True, "message": i18n.gettext("Role updated — user's sessions have been invalidated")}
 
 
 @router.post("/api/users/{user_id}/password")
@@ -235,20 +235,20 @@ async def reset_user_password(
     _=Depends(require_role("admin")),
 ):
     if len(password) < 8:
-        return {"ok": False, "message": "Password must be at least 8 characters"}
+        return {"ok": False, "message": i18n.gettext("Password must be at least 8 characters")}
 
     hashed = await run_in_threadpool(hash_password, password)
     with get_db() as db:
         target = db.execute("SELECT id FROM users WHERE id = ?", (user_id,)).fetchone()
         if not target:
-            return {"ok": False, "message": "User not found"}
+            return {"ok": False, "message": i18n.gettext("User not found")}
         db.execute(
             "UPDATE users SET password = ?, token_version = token_version + 1, updated_at = datetime('now') WHERE id = ?",
             (hashed, user_id),
         )
 
     logger.info("Password reset for user id=%d by admin", user_id)
-    return {"ok": True, "message": "Password updated — user's sessions have been invalidated"}
+    return {"ok": True, "message": i18n.gettext("Password updated — user's sessions have been invalidated")}
 
 
 @router.post("/api/account/password")
@@ -340,17 +340,17 @@ async def change_language(
 async def delete_user(request: Request, user_id: int, _=Depends(require_role("admin"))):
     current_user = request.state.user
     if current_user["id"] == user_id:
-        return {"ok": False, "message": "Cannot delete your own account"}
+        return {"ok": False, "message": i18n.gettext("Cannot delete your own account")}
 
     with get_db() as db:
         target = db.execute("SELECT id, role, token_version FROM users WHERE id = ?", (user_id,)).fetchone()
         if not target:
-            return {"ok": False, "message": "User not found"}
+            return {"ok": False, "message": i18n.gettext("User not found")}
 
         if target["role"] == "admin":
             admin_count = db.execute("SELECT COUNT(*) as cnt FROM users WHERE role = 'admin'").fetchone()["cnt"]
             if admin_count <= 1:
-                return {"ok": False, "message": "Cannot delete the last admin"}
+                return {"ok": False, "message": i18n.gettext("Cannot delete the last admin")}
 
         # A restore must outrank this user's sessions too, after the row is gone.
         db.execute(
@@ -361,4 +361,4 @@ async def delete_user(request: Request, user_id: int, _=Depends(require_role("ad
         db.execute("DELETE FROM users WHERE id = ?", (user_id,))
 
     logger.info("User id=%d deleted by admin '%s'", user_id, current_user["username"])
-    return {"ok": True, "message": "User deleted"}
+    return {"ok": True, "message": i18n.gettext("User deleted")}

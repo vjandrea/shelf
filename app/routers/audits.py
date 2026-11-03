@@ -23,6 +23,7 @@ with the fragment carrying an inline error, and a not-found answers 404 with an
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request
 from fastapi.responses import Response
 
+from app import i18n
 from app.auth import require_role
 from app.database import get_db
 from app.features import feature_enabled, require_feature
@@ -282,7 +283,7 @@ async def audit_report_page(
     with get_db() as db:
         session = audits.get_session(db, audit_id)
         if session is None:
-            raise HTTPException(status_code=404, detail="Audit not found")
+            raise HTTPException(status_code=404, detail=i18n.gettext("Audit not found"))
         report = audits.build_report(db, session)
     return request.app.state.templates.TemplateResponse(
         request, "audit.html", {"session": session, "report": report})
