@@ -29,6 +29,7 @@ import re
 
 import httpx
 
+from app import i18n
 from app.config import MAX_TILES_PER_REQUEST
 from app.services import isbn as isbn_svc
 
@@ -294,7 +295,7 @@ async def detect_spines(images: list[tuple[bytes, str]], settings: dict) -> list
             return await _detect_ollama(images[0][0], settings)
         results = [await _detect_ollama(img, settings) for img, _ in images]
         return merge_tile_books(results)
-    raise VisionError("No vision provider configured — set one up in Settings → Integrations")
+    raise VisionError(i18n.gettext("No vision provider configured — set one up in Settings → Integrations"))
 
 
 def _prompt_for(count: int) -> str:
@@ -306,7 +307,7 @@ def _prompt_for(count: int) -> str:
 async def _detect_anthropic(images: list[tuple[bytes, str]], settings: dict) -> list[dict]:
     api_key = settings.get("anthropic_api_key")
     if not api_key:
-        raise VisionError("Anthropic API key is not configured")
+        raise VisionError(i18n.gettext("Anthropic API key is not configured"))
     model = settings.get("anthropic_vision_model") or DEFAULT_ANTHROPIC_MODEL
 
     import anthropic
@@ -333,27 +334,27 @@ async def _detect_anthropic(images: list[tuple[bytes, str]], settings: dict) -> 
             messages=[{"role": "user", "content": content}],
         )
     except anthropic.AuthenticationError:
-        raise VisionError("Anthropic API key was rejected — check it in Settings")
+        raise VisionError(i18n.gettext("Anthropic API key was rejected — check it in Settings"))
     except anthropic.APIStatusError as e:
         detail = _error_detail(e.body)
         logger.warning("Anthropic vision call failed: HTTP %d %s",
                         e.status_code, _clip(detail or str(e.message), 500))
         if 400 <= e.status_code < 500 and e.status_code not in (408, 409, 429) and detail:
-            raise VisionError(f"Anthropic rejected the request (HTTP {e.status_code}): {_clip(detail)}")
-        raise VisionError(f"Anthropic API error (HTTP {e.status_code}) — try again")
+            raise VisionError(i18n.gettext("Anthropic rejected the request (HTTP %(code)s): %(detail)s") % {"code": e.status_code, "detail": _clip(detail)})
+        raise VisionError(i18n.gettext("Anthropic API error (HTTP %(code)s) — try again") % {"code": e.status_code})
     except anthropic.APIConnectionError:
-        raise VisionError("Could not reach the Anthropic API — check your connection")
+        raise VisionError(i18n.gettext("Could not reach the Anthropic API — check your connection"))
     finally:
         await client.close()
 
     if response.stop_reason == "refusal":
-        raise VisionError("The model declined to process this image")
+        raise VisionError(i18n.gettext("The model declined to process this image"))
     text = next((b.text for b in response.content if b.type == "text"), "")
     try:
         return _clean(json.loads(text))
     except json.JSONDecodeError:
         logger.warning("Anthropic vision returned non-JSON output")
-        raise VisionError("The model returned an unreadable response — try again")
+        raise VisionError(i18n.gettext("The model returned an unreadable response — try again"))
 
 
 async def _detect_openai(images: list[tuple[bytes, str]], settings: dict) -> list[dict]:
@@ -367,7 +368,7 @@ async def _detect_openai(images: list[tuple[bytes, str]], settings: dict) -> lis
     """
     api_key = settings.get("openai_api_key")
     if not api_key:
-        raise VisionError("OpenAI API key is not configured")
+        raise VisionError(i18n.gettext("OpenAI API key is not configured"))
     base_url = (settings.get("openai_base_url") or DEFAULT_OPENAI_BASE_URL).rstrip("/")
     model = settings.get("openai_vision_model") or DEFAULT_OPENAI_MODEL
 
@@ -393,9 +394,9 @@ async def _detect_openai(images: list[tuple[bytes, str]], settings: dict) -> lis
         async with httpx.AsyncClient(timeout=300.0) as client:
             resp = await client.post(f"{base_url}/chat/completions", json=payload, headers=headers)
     except httpx.HTTPError:
-        raise VisionError(f"Could not reach the OpenAI API at {base_url}")
+        raise VisionError(i18n.gettext("Could not reach the OpenAI API at %(url)s") % {"url": base_url})
     if resp.status_code in (401, 403):
-        raise VisionError("OpenAI API key was rejected — check it in Settings")
+        raise VisionError(i18n.gettext("OpenAI API key was rejected — check it in Settings"))
     if resp.status_code != 200:
         try:
             body = resp.json()
@@ -412,12 +413,12 @@ async def _detect_openai(images: list[tuple[bytes, str]], settings: dict) -> lis
         text = resp.json()["choices"][0]["message"]["content"] or ""
     except (KeyError, IndexError, TypeError):
         logger.warning("OpenAI vision returned an unexpected response shape")
-        raise VisionError("The OpenAI API returned an unexpected response — try again")
+        raise VisionError(i18n.gettext("The OpenAI API returned an unexpected response — try again"))
     try:
         return _clean(json.loads(text))
     except json.JSONDecodeError:
         logger.warning("OpenAI vision returned non-JSON output: %s", text[:200])
-        raise VisionError("The model returned an unreadable response — try again")
+        raise VisionError(i18n.gettext("The model returned an unreadable response — try again"))
 
 
 async def _detect_ollama(image_bytes: bytes, settings: dict) -> list[dict]:
@@ -438,16 +439,16 @@ async def _detect_ollama(image_bytes: bytes, settings: dict) -> list[dict]:
         async with httpx.AsyncClient(timeout=300.0) as client:
             resp = await client.post(f"{url}/api/chat", json=payload)
     except httpx.HTTPError:
-        raise VisionError(f"Could not reach Ollama at {url}")
+        raise VisionError(i18n.gettext("Could not reach Ollama at %(url)s") % {"url": url})
     if resp.status_code == 404:
-        raise VisionError(f"Ollama model {model!r} not found — pull it with: ollama pull {model}")
+        raise VisionError(i18n.gettext("Ollama model %(quoted)s not found — pull it with: ollama pull %(model)s") % {"quoted": repr(model), "model": model})
     if resp.status_code != 200:
         logger.warning("Ollama vision call failed: HTTP %d %s", resp.status_code, resp.text[:200])
-        raise VisionError(f"Ollama error (HTTP {resp.status_code})")
+        raise VisionError(i18n.gettext("Ollama error (HTTP %(code)s)") % {"code": resp.status_code})
 
     content = (resp.json().get("message") or {}).get("content") or ""
     try:
         return _clean(json.loads(content))
     except json.JSONDecodeError:
         logger.warning("Ollama vision returned non-JSON output: %s", content[:200])
-        raise VisionError("The model returned an unreadable response — try a different model")
+        raise VisionError(i18n.gettext("The model returned an unreadable response — try a different model"))

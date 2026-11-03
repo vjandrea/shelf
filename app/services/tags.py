@@ -22,6 +22,7 @@ import sqlite3
 from contextlib import contextmanager
 from contextvars import ContextVar
 
+from app import i18n
 from app import config
 
 MAX_TAG_LENGTH = 40
@@ -151,7 +152,7 @@ class UnknownItems(ValueError):
     trashed). `count` is how many."""
 
     def __init__(self, count: int):
-        super().__init__(f"{count} selected item(s) no longer exist")
+        super().__init__(i18n.gettext("%(n)s selected item(s) no longer exist") % {"n": count})
         self.count = count
 
 

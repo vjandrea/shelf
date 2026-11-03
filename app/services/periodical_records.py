@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import re
 
+from app import i18n
+
 
 def normalise_issn(value: str | None) -> str | None:
     raw = re.sub(r"[^0-9X]", "", (value or "").upper())
@@ -56,7 +58,7 @@ def upsert_publication(
     """Create or update one continuing publication identity (see `find_publication`)."""
     title = (title or "").strip()
     if not title:
-        raise ValueError("Periodical title is required")
+        raise ValueError(i18n.gettext("Periodical title is required"))
     issn = normalise_issn(issn)
 
     publication_id = find_publication(db, title=title, issn=issn)
@@ -91,11 +93,11 @@ def link_issue(
 ) -> None:
     """Attach concrete issue identity to an existing Shelf item."""
     if not db.execute("SELECT 1 FROM items_live WHERE id = ?", (item_id,)).fetchone():
-        raise ValueError("Item not found")
+        raise ValueError(i18n.gettext("Item not found"))
     if not db.execute(
         "SELECT 1 FROM periodical_publications WHERE id = ?", (publication_id,)
     ).fetchone():
-        raise ValueError("Publication not found")
+        raise ValueError(i18n.gettext("Publication not found"))
 
     db.execute(
         "INSERT INTO periodical_issues "
