@@ -896,7 +896,7 @@ async def copy_template(item_id: int, _=Depends(require_role("editor"))):
     with get_db() as db:
         fields = item_template.copyable_fields(db, item_id)
     if fields is None:
-        return JSONResponse({"error": "Not found"}, status_code=404)
+        return JSONResponse({"error": i18n.gettext("Not found")}, status_code=404)
     return JSONResponse(fields)
 
 
@@ -1058,7 +1058,7 @@ async def merge_items(request: Request, _=Depends(require_role("admin"))):
         keep_id = int(data.get("keep_id", 0))
         merge_ids = [int(i) for i in data.get("merge_ids", [])]
     except (ValueError, TypeError):
-        return {"ok": False, "message": "Invalid item IDs"}
+        return {"ok": False, "message": i18n.gettext("Invalid item IDs")}
 
     if not keep_id or not merge_ids:
         return {"ok": False, "message": i18n.gettext("Specify keep_id and merge_ids")}
@@ -1208,7 +1208,7 @@ async def update_item(request: Request, item_id: int, _=Depends(require_role("ed
         ).fetchone()
         # Missing or in Trash — a stale edit form must not write to either.
         if row is None:
-            return HTMLResponse("Not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Not found"), status_code=404)
         old_series_name = row["series_name"]
 
         # #87: the edit form re-posts every named control on every save,
@@ -1299,7 +1299,7 @@ async def set_reading_status(request: Request, item_id: int, status: str = Form(
     with get_db() as db:
         old = db.execute("SELECT reading_status, date_started FROM items_live WHERE id = ?", (item_id,)).fetchone()
         if not old:
-            return HTMLResponse("Not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Not found"), status_code=404)
 
         updates = {"reading_status": reading_status}
 
@@ -1393,7 +1393,7 @@ async def fetch_synopsis(item_id: int, _=Depends(require_role("editor"))):
         hc_token = get_setting(db, "hardcover_token")
         google_api_key = get_setting(db, "google_books_api_key")
     if not item:
-        return {"ok": False, "message": "Item not found"}
+        return {"ok": False, "message": i18n.gettext("Item not found")}
 
     async with httpx.AsyncClient(timeout=HTTP_TIMEOUT) as client:
         desc = await synopsis_svc.fetch_description(
@@ -1407,7 +1407,7 @@ async def fetch_synopsis(item_id: int, _=Depends(require_role("editor"))):
                 (desc, item_id),
             )
         return {"ok": True}
-    return {"ok": False, "message": "No synopsis found"}
+    return {"ok": False, "message": i18n.gettext("No synopsis found")}
 
 
 @router.get("/synopses/backfill/stream")
@@ -1463,7 +1463,7 @@ async def backfill_synopses_stream(request: Request, _=Depends(require_role("adm
             await queue.put({"type": "done", **results})
         except Exception:
             logger.exception("Synopsis backfill failed")
-            await queue.put({"type": "error", "message": "Synopsis backfill failed — check server logs"})
+            await queue.put({"type": "error", "message": i18n.gettext("Synopsis backfill failed — check server logs")})
 
     async def event_stream():
         task = asyncio.create_task(run_backfill())
@@ -1526,7 +1526,7 @@ async def test_igdb_key(request: Request, _=Depends(require_role("admin"))):
             client_id = client_id or get_setting(db, "igdb_client_id")
             client_secret = client_secret or get_setting(db, "igdb_client_secret")
     if not client_id or not client_secret:
-        return {"ok": False, "message": "Both Client ID and Client Secret are required"}
+        return {"ok": False, "message": i18n.gettext("Both Client ID and Client Secret are required")}
     async with httpx.AsyncClient(timeout=HTTP_TIMEOUT) as client:
         return await igdb.test_credentials(client_id, client_secret, client)
 

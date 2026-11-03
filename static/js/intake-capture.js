@@ -75,7 +75,7 @@
 
         function grab() {
             if (!stream || video.videoWidth === 0) {
-                return Promise.reject(new Error('No live camera stream to grab a frame from.'));
+                return Promise.reject(new Error(t('No live camera stream to grab a frame from.')));
             }
             var canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
@@ -85,7 +85,7 @@
             return new Promise(function (resolve, reject) {
                 canvas.toBlob(function (blob) {
                     if (blob) resolve(blob);
-                    else reject(new Error('Failed to encode captured frame as JPEG.'));
+                    else reject(new Error(t('Failed to encode captured frame as JPEG.')));
                 }, 'image/jpeg', 0.92);
             });
         }

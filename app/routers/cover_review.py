@@ -36,6 +36,7 @@ import httpx
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
+from app import i18n
 from app.auth import require_role
 from app.config import HTTP_TIMEOUT
 from app.database import get_db
@@ -251,7 +252,7 @@ async def cover_review_search(
         # unconfigured (G15).
         creds = {} if not item else items_covers._cover_search_credentials(db, item["media_type"])
     if not item:
-        return HTMLResponse("Not found", status_code=404)
+        return HTMLResponse(i18n.gettext("Not found"), status_code=404)
 
     search_query = (query or "").strip() or item["title"]
     async with httpx.AsyncClient(timeout=HTTP_TIMEOUT) as client:

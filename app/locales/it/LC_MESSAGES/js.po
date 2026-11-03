@@ -579,6 +579,14 @@ msgstr "Non è andata a buon fine ({why}): ricarica e riprova"
 msgid "Merge {count} records into \"{title}\"? The merged-away records cannot be restored."
 msgstr "Unire {count} schede in \"{title}\"? Le schede unite non si potranno ripristinare."
 
+#: static/js/intake-capture.js:78
+msgid "No live camera stream to grab a frame from."
+msgstr "Nessun flusso video attivo da cui catturare un'immagine."
+
+#: static/js/intake-capture.js:88
+msgid "Failed to encode captured frame as JPEG."
+msgstr "Impossibile convertire in JPEG l'immagine catturata."
+
 #: static/js/intake.js:186
 msgid "No camera found. Use Choose photo instead."
 msgstr "Nessuna fotocamera trovata. Usa invece Scegli una foto."
@@ -628,6 +636,10 @@ msgstr "Inquadra un codice a barre commerciale UPC-A o EAN-13."
 #: static/js/item_edit.js:158
 msgid "That is not a valid UPC-A / EAN-13 retail barcode. Try again."
 msgstr "Questo non è un codice a barre commerciale UPC-A / EAN-13 valido. Riprova."
+
+#: static/js/komga-item.js:25
+msgid "Open in Komga"
+msgstr "Apri in Komga"
 
 #: static/js/komga-settings.js:40 static/js/romm-settings.js:36
 msgid "Saved — leave blank to keep"
@@ -711,6 +723,10 @@ msgstr "Ordine dello scaffale salvato."
 #: static/js/location-order.js:81
 msgid "Ordering…"
 msgstr "Ordinamento in corso…"
+
+#: static/js/romm-item.js:25
+msgid "Open in RomM"
+msgstr "Apri in RomM"
 
 #: static/js/romm-settings.js:36
 msgid "RomM client API token"

@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 
+from app import i18n
 from app import config
 from app.auth import require_role
 from app.database import get_db
@@ -92,12 +93,12 @@ async def import_archive(request: Request, _=Depends(require_role("admin"))):
     form = await request.form()
     mode = form.get("mode", "skip")
     if mode not in ("skip", "update"):
-        return _refusal("Invalid import mode")
+        return _refusal(i18n.gettext("Invalid import mode"))
     replace_covers = _truthy(form.get("replace_covers"), False)
 
     upload = form.get("file")
     if not upload or not hasattr(upload, "read"):
-        return _refusal("No file uploaded")
+        return _refusal(i18n.gettext("No file uploaded"))
 
     content = await upload.read(MAX_IMPORT_UPLOAD_SIZE + 1)
     if len(content) > MAX_IMPORT_UPLOAD_SIZE:
@@ -131,11 +132,11 @@ async def plan_archive_import(request: Request, _=Depends(require_role("admin"))
     form = await request.form()
     mode = form.get("mode", "skip")
     if mode not in ("skip", "update"):
-        return _refusal("Invalid import mode")
+        return _refusal(i18n.gettext("Invalid import mode"))
 
     upload = form.get("file")
     if not upload or not hasattr(upload, "read"):
-        return _refusal("No file uploaded")
+        return _refusal(i18n.gettext("No file uploaded"))
 
     content = await upload.read(MAX_IMPORT_UPLOAD_SIZE + 1)
     if len(content) > MAX_IMPORT_UPLOAD_SIZE:
@@ -180,7 +181,7 @@ async def apply_archive_import(request: Request, _=Depends(require_role("admin")
     form = await request.form()
     mode = form.get("mode", "skip")
     if mode not in ("skip", "update"):
-        return _refusal("Invalid import mode")
+        return _refusal(i18n.gettext("Invalid import mode"))
     upload_id = form.get("upload_id") or ""
 
     import_staging.sweep_expired()
@@ -194,7 +195,7 @@ async def apply_archive_import(request: Request, _=Depends(require_role("admin")
         # The staged upload/plan are left in place — this is a stale form,
         # not an invalid or expired preview, so the same upload_id can be
         # retried once the form's mode matches what was actually reviewed.
-        return _refusal("This plan was reviewed under a different mode — preview it again.")
+        return _refusal(i18n.gettext("This plan was reviewed under a different mode — preview it again."))
 
     selection = normalize_selection({
         key: _truthy(form.get(key), default)
