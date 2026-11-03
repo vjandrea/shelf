@@ -57,6 +57,7 @@ location keeps the position.
 from collections.abc import Mapping
 from typing import Any
 
+from app import i18n
 from app.services import trash
 from app.services.write_targets import validated_location_id
 
@@ -305,7 +306,7 @@ def sync_primary_location(db, item_id: int, location_id: int | None) -> int | No
     if location_id is not None and not db.execute(
         "SELECT 1 FROM locations WHERE id = ?", (location_id,)
     ).fetchone():
-        raise ValueError("Location not found")
+        raise ValueError(i18n.gettext("Location not found"))
 
     primary = db.execute(
         "SELECT id, location_id FROM copies_live WHERE item_id = ? AND is_primary = 1",
@@ -320,7 +321,7 @@ def sync_primary_location(db, item_id: int, location_id: int | None) -> int | No
 
     item = db.execute("SELECT 1 FROM items_live WHERE id = ?", (item_id,)).fetchone()
     if not item:
-        raise ValueError("Item not found")
+        raise ValueError(i18n.gettext("Item not found"))
 
     next_number = db.execute(
         "SELECT COALESCE(MAX(copy_number), 0) + 1 AS n FROM item_copies WHERE item_id = ?",
@@ -410,7 +411,7 @@ def add_copy(db, item_id: int, fields: Mapping[str, Any] | None = None) -> int:
         )
 
     if not db.execute("SELECT 1 FROM items_live WHERE id = ?", (item_id,)).fetchone():
-        raise ValueError("Item not found")
+        raise ValueError(i18n.gettext("Item not found"))
 
     # Two reads, deliberately, because they answer questions of different
     # kinds. Numbering asks what the UNIQUE(item_id, copy_number) constraint

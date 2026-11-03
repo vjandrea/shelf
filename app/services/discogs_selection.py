@@ -12,6 +12,7 @@ result instead.
 
 from __future__ import annotations
 
+from app import i18n
 from app.services import music_catalog
 
 IDENTIFIER_TYPE = "discogs_release_id"
@@ -21,9 +22,9 @@ def _release_id(value: int | str) -> int:
     try:
         release_id = int(str(value).strip())
     except (TypeError, ValueError) as exc:
-        raise ValueError("Discogs release id must be a positive integer") from exc
+        raise ValueError(i18n.gettext("Discogs release id must be a positive integer")) from exc
     if release_id <= 0:
-        raise ValueError("Discogs release id must be a positive integer")
+        raise ValueError(i18n.gettext("Discogs release id must be a positive integer"))
     return release_id
 
 
@@ -58,7 +59,7 @@ def set_selected_release_id(db, item_id: int, release_id: int | str) -> int:
         (item_id,),
     ).fetchone()
     if not exists:
-        raise ValueError("Discogs selection requires an existing music release")
+        raise ValueError(i18n.gettext("Discogs selection requires an existing music release"))
 
     db.execute(
         "DELETE FROM music_identifiers "

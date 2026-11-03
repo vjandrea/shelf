@@ -339,3 +339,20 @@ def test_user_admin_messages_are_translated(admin_client):
 
     short = admin_client.post("/api/users", data={"username": "x", "password": "12345678", "role": "viewer"}).json()
     assert short["message"] == "Il nome utente deve contenere almeno 2 caratteri"
+
+
+def test_identifier_in_trash_message_is_translated(db):
+    from app.services import item_write
+    from app.services.item_write import IdentifierInTrash
+
+    item_id = _insert_item(db, title="Cestinato", isbn="9780000000118")
+    item_write.trash_item(db, item_id)
+    db.commit()
+    token = i18n.current_locale.set("it")
+    try:
+        with pytest.raises(IdentifierInTrash) as exc:
+            item_write.insert_item(db, {"title": "Doppione", "isbn": "9780000000118"}, restore_trashed=False)
+    finally:
+        i18n.current_locale.reset(token)
+    assert str(exc.value) == ("“Cestinato” è nel cestino e usa già questo ISBN. Ripristinalo dal cestino "
+                              "o eliminalo definitivamente prima di aggiungere questo elemento.")

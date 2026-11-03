@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: andrea@bergamasco.me\n"
-"PO-Revision-Date: 2026-11-10 17:31+0100\n"
+"PO-Revision-Date: 2026-11-10 17:32+0100\n"
 "Last-Translator: Andrea Bergamasco\n"
 "Language: it\n"
 "Language-Team: Italian\n"
@@ -716,7 +716,8 @@ msgstr "La data di scadenza non è valida"
 #: app/routers/items.py:1403 app/routers/related_media.py:36
 #: app/routers/related_media.py:67 app/routers/related_media.py:89
 #: app/routers/related_media.py:106 app/routers/tags.py:120
-#: app/routers/tags.py:136
+#: app/routers/tags.py:136 app/services/item_copies.py:324
+#: app/services/item_copies.py:414 app/services/periodical_records.py:96
 msgid "Item not found"
 msgstr "Elemento non trovato"
 
@@ -1069,7 +1070,7 @@ msgstr "Richiesta non valida"
 msgid "Komga settings saved"
 msgstr "Impostazioni di Komga salvate"
 
-#: app/routers/komga.py:79
+#: app/routers/komga.py:79 app/services/komga_libraries.py:102
 msgid "Could not connect to Komga"
 msgstr "Impossibile connettersi a Komga"
 
@@ -1099,6 +1100,7 @@ msgid "Invalid copy order"
 msgstr "Ordine delle copie non valido"
 
 #: app/routers/location_order.py:69 app/routers/location_order.py:92
+#: app/services/item_copies.py:309 app/services/locations.py:46
 msgid "Location not found"
 msgstr "Posizione non trovata"
 
@@ -1163,7 +1165,7 @@ msgstr "Collegamento non trovato"
 msgid "RomM settings saved"
 msgstr "Impostazioni di RomM salvate"
 
-#: app/routers/romm.py:79
+#: app/routers/romm.py:79 app/services/romm_client.py:145
 msgid "Could not connect to RomM"
 msgstr "Impossibile connettersi a RomM"
 
@@ -1500,6 +1502,52 @@ msgstr "Nessun prezzo trovato"
 msgid "Valuation failed — check server logs"
 msgstr "Valutazione non riuscita: controlla i log del server"
 
+#: app/services/archive.py:651
+msgid "The uploaded file could not be read."
+msgstr "Impossibile leggere il file caricato."
+
+#: app/services/archive.py:653
+msgid "Archive is too large (max 500 MB)."
+msgstr "L'archivio è troppo grande (massimo 500 MB)."
+
+#: app/services/archive.py:658
+msgid "That file is not a zip archive."
+msgstr "Questo file non è un archivio zip."
+
+#: app/services/archive.py:696
+#, python-format
+msgid "Archive contains an %(reason)s — refusing to read it."
+msgstr "L'archivio contiene un %(reason)s: non viene letto."
+
+#: app/services/archive.py:698
+msgid "Archive contains a directory entry — refusing to read it."
+msgstr "L'archivio contiene una voce di cartella: non viene letto."
+
+#: app/services/archive.py:702
+msgid "Archive contains a symlink — refusing to read it."
+msgstr "L'archivio contiene un collegamento simbolico: non viene letto."
+
+#: app/services/archive.py:704
+msgid "Archive contains duplicate entries — refusing to read it."
+msgstr "L'archivio contiene voci duplicate: non viene letto."
+
+#: app/services/archive.py:711 app/services/archive.py:745
+msgid "Archive is too large when uncompressed."
+msgstr "L'archivio decompresso è troppo grande."
+
+#: app/services/archive.py:720
+#, python-brace-format
+msgid "That zip is not a Shelf archive (no {} inside)."
+msgstr "Questo zip non è un archivio di Shelf (non contiene {})."
+
+#: app/services/archive.py:726
+msgid "That zip is not a Shelf portable archive."
+msgstr "Questo zip non è un archivio portabile di Shelf."
+
+#: app/services/archive.py:729
+msgid "Archive has an unrecognized format version."
+msgstr "L'archivio ha una versione di formato non riconosciuta."
+
 #: app/services/audits.py:68
 #, python-format
 msgid "%(name)s (deleted)"
@@ -1541,6 +1589,169 @@ msgstr "Coda negozio"
 #: app/services/browse_counts.py:34
 msgid "CSV Import"
 msgstr "Importazione CSV"
+
+#: app/services/discogs_selection.py:25 app/services/discogs_selection.py:27
+msgid "Discogs release id must be a positive integer"
+msgstr "L'ID dell'uscita Discogs deve essere un intero positivo"
+
+#: app/services/discogs_selection.py:62
+msgid "Discogs selection requires an existing music release"
+msgstr "La scelta Discogs richiede un'uscita musicale esistente"
+
+#: app/services/item_write.py:227
+#, python-format
+msgid "Invalid ISBN: %(value)s"
+msgstr "ISBN non valido: %(value)s"
+
+#: app/services/item_write.py:239
+#, python-format
+msgid "Unknown media type: %(value)r"
+msgstr "Tipo di media sconosciuto: %(value)r"
+
+#: app/services/item_write.py:261
+#, python-format
+msgid "Unknown game platform: %(value)r"
+msgstr "Piattaforma di gioco sconosciuta: %(value)r"
+
+#: app/services/item_write.py:296
+msgid "Owned must be 0 or 1"
+msgstr "\"Posseduto\" deve essere 0 o 1"
+
+#: app/services/item_write.py:314
+msgid "Wishlisted must be true or false"
+msgstr "\"In lista desideri\" deve essere vero o falso"
+
+#: app/services/item_write.py:340 app/services/item_write.py:345
+#: app/services/item_write.py:354
+msgid "An owned item cannot be on the wishlist"
+msgstr "Un elemento posseduto non può essere nella lista desideri"
+
+#: app/services/item_write.py:588
+#, python-format
+msgid "“%(title)s” is in Trash and already uses this %(field)s. Restore it from Trash, or delete it permanently, before adding this item."
+msgstr "“%(title)s” è nel cestino e usa già questo %(field)s. Ripristinalo dal cestino o eliminalo definitivamente prima di aggiungere questo elemento."
+
+#: app/services/item_write.py:753
+#, python-format
+msgid "“%(title)s” is in Trash and already uses this ISBN. Restore it from Trash, or delete it permanently, before using this ISBN here."
+msgstr "“%(title)s” è nel cestino e usa già questo ISBN. Ripristinalo dal cestino o eliminalo definitivamente prima di usare qui questo ISBN."
+
+#: app/services/item_write.py:769
+#, python-format
+msgid "“%(title)s” is in Trash and already uses this UPC. Restore it from Trash, or delete it permanently, before using this UPC here."
+msgstr "“%(title)s” è nel cestino e usa già questo UPC. Ripristinalo dal cestino o eliminalo definitivamente prima di usare qui questo UPC."
+
+#: app/services/komga_books.py:127 app/services/komga_libraries.py:92
+msgid "Komga URL is required"
+msgstr "Serve l'URL di Komga"
+
+#: app/services/komga_books.py:129 app/services/komga_libraries.py:94
+msgid "Komga API key is required"
+msgstr "Serve la chiave API di Komga"
+
+#: app/services/komga_books.py:131
+msgid "Komga library ID is required"
+msgstr "Serve l'ID della libreria Komga"
+
+#: app/services/komga_books.py:154
+msgid "Could not fetch Komga books"
+msgstr "Impossibile recuperare i libri da Komga"
+
+#: app/services/komga_books.py:156
+#, python-format
+msgid "Komga returned HTTP %(code)s while fetching books"
+msgstr "Komga ha risposto HTTP %(code)s durante il recupero dei libri"
+
+#: app/services/komga_books.py:160
+msgid "Komga returned invalid book JSON"
+msgstr "Komga ha restituito un JSON dei libri non valido"
+
+#: app/services/komga_books.py:162
+msgid "Komga returned an invalid book page"
+msgstr "Komga ha restituito una pagina di libri non valida"
+
+#: app/services/komga_books.py:165
+msgid "Komga returned an invalid book list"
+msgstr "Komga ha restituito un elenco di libri non valido"
+
+#: app/services/komga_libraries.py:104
+#, python-format
+msgid "Komga returned HTTP %(code)s"
+msgstr "Komga ha risposto HTTP %(code)s"
+
+#: app/services/komga_libraries.py:108
+msgid "Komga returned invalid JSON"
+msgstr "Komga ha restituito un JSON non valido"
+
+#: app/services/komga_libraries.py:110
+msgid "Komga returned an invalid library list"
+msgstr "Komga ha restituito un elenco di librerie non valido"
+
+#: app/services/komga_libraries.py:138
+msgid "Komga browser URL is required"
+msgstr "Serve l'URL di Komga per il browser"
+
+#: app/services/komga_libraries.py:141
+msgid "Komga book ID is required"
+msgstr "Serve l'ID del libro Komga"
+
+#: app/services/komga_records.py:49
+msgid "Komga library must be classified as Comic or Manga"
+msgstr "La libreria Komga va classificata come fumetti o manga"
+
+#: app/services/komga_records.py:121
+msgid "Shelf item not found"
+msgstr "Elemento di Shelf non trovato"
+
+#: app/services/komga_records.py:153
+msgid "This Komga holding is attached to a manually catalogued item; change its Comic/Manga type explicitly in Shelf before re-syncing"
+msgstr "Questo elemento di Komga è collegato a un elemento catalogato a mano; cambia esplicitamente in Shelf il tipo fumetto/manga prima di sincronizzare di nuovo"
+
+#: app/services/komga_records.py:162
+msgid "Changing this Komga library between Comic and Manga would collide with an existing Shelf edition"
+msgstr "Passare questa libreria Komga da fumetti a manga, o viceversa, entrerebbe in conflitto con un'edizione già presente in Shelf"
+
+#: app/services/komga_records.py:193
+msgid "Komga candidate is missing id, library or title"
+msgstr "Al risultato di Komga mancano l'ID, la libreria o il titolo"
+
+#: app/services/komga_records.py:213
+msgid "Refreshing this Komga holding would give it an ISBN an item in Trash already holds"
+msgstr "Aggiornare questo elemento di Komga gli darebbe un ISBN che appartiene già a un elemento nel cestino"
+
+#: app/services/location_order.py:84
+msgid "Copy order must contain every copy in this location exactly once"
+msgstr "L'ordine deve contenere ogni copia di questa posizione esattamente una volta"
+
+#: app/services/location_order.py:140
+msgid "Unknown sort order"
+msgstr "Ordinamento sconosciuto"
+
+#: app/services/locations.py:79
+msgid "A location cannot be its own parent"
+msgstr "Una posizione non può contenere se stessa"
+
+#: app/services/locations.py:90
+msgid "A location cannot be moved inside itself"
+msgstr "Una posizione non può essere spostata dentro se stessa"
+
+#: app/services/locations.py:98 app/services/locations.py:138
+#: app/services/locations.py:169
+msgid "Location name cannot be blank"
+msgstr "Il nome della posizione non può essere vuoto"
+
+#: app/services/locations.py:102 app/services/locations.py:111
+#: app/services/locations.py:175 app/services/locations.py:185
+msgid "A location with that name already exists here"
+msgstr "Qui esiste già una posizione con questo nome"
+
+#: app/services/locations.py:194
+msgid "Move or remove child locations first"
+msgstr "Prima sposta o rimuovi le sotto-posizioni"
+
+#: app/services/media_groups.py:32
+msgid "Unknown related-media link type"
+msgstr "Tipo di collegamento tra media sconosciuto"
 
 #: app/services/national.py:89
 msgid "English"
@@ -1605,6 +1816,145 @@ msgstr "Cinese"
 #: app/services/national.py:104
 msgid "Korean"
 msgstr "Coreano"
+
+#: app/services/periodical_records.py:61
+msgid "Periodical title is required"
+msgstr "Il titolo del periodico è obbligatorio"
+
+#: app/services/periodical_records.py:100
+msgid "Publication not found"
+msgstr "Pubblicazione non trovata"
+
+#: app/services/periodical_scan.py:78
+msgid "Periodical publication title is required"
+msgstr "Il titolo della pubblicazione è obbligatorio"
+
+#: app/services/romm_client.py:71
+msgid "RomM URL must be an HTTP or HTTPS URL"
+msgstr "L'URL di RomM deve essere un URL HTTP o HTTPS"
+
+#: app/services/romm_client.py:73
+msgid "RomM URL is invalid"
+msgstr "L'URL di RomM non è valido"
+
+#: app/services/romm_client.py:80
+msgid "RomM API token is required"
+msgstr "Serve il token API di RomM"
+
+#: app/services/romm_client.py:109
+msgid "RomM platform has no usable identity"
+msgstr "La piattaforma RomM non ha un identificativo utilizzabile"
+
+#: app/services/romm_client.py:151
+msgid "RomM returned invalid JSON"
+msgstr "RomM ha restituito un JSON non valido"
+
+#: app/services/romm_client.py:153
+msgid "RomM returned an invalid platform list"
+msgstr "RomM ha restituito un elenco di piattaforme non valido"
+
+#: app/services/romm_client.py:247
+msgid "RomM ROM listing remained unavailable"
+msgstr "L'elenco delle ROM di RomM è rimasto non disponibile"
+
+#: app/services/romm_client.py:260
+msgid "RomM ROM listing failed"
+msgstr "Elenco delle ROM di RomM non riuscito"
+
+#: app/services/romm_client.py:264
+msgid "RomM returned invalid ROM JSON"
+msgstr "RomM ha restituito un JSON delle ROM non valido"
+
+#: app/services/romm_client.py:273 app/services/romm_client.py:275
+msgid "RomM returned an invalid ROM page"
+msgstr "RomM ha restituito una pagina di ROM non valida"
+
+#: app/services/romm_client.py:295
+msgid "RomM platform has no id"
+msgstr "La piattaforma RomM non ha un ID"
+
+#: app/services/romm_client.py:324
+msgid "RomM pagination made no progress"
+msgstr "La paginazione di RomM non avanza"
+
+#: app/services/romm_client.py:337
+msgid "RomM ROM id is required"
+msgstr "Serve l'ID della ROM di RomM"
+
+#: app/services/tags.py:155
+#, python-format
+msgid "%(n)s selected item(s) no longer exist"
+msgstr "Elementi selezionati che non esistono più: %(n)s"
+
+#: app/services/vision.py:298
+msgid "No vision provider configured — set one up in Settings → Integrations"
+msgstr "Nessun servizio di visione configurato: impostalo in Impostazioni → Integrazioni"
+
+#: app/services/vision.py:310
+msgid "Anthropic API key is not configured"
+msgstr "La chiave API Anthropic non è configurata"
+
+#: app/services/vision.py:337
+msgid "Anthropic API key was rejected — check it in Settings"
+msgstr "La chiave API Anthropic è stata rifiutata: controllala nelle Impostazioni"
+
+#: app/services/vision.py:343
+#, python-format
+msgid "Anthropic rejected the request (HTTP %(code)s): %(detail)s"
+msgstr "Anthropic ha rifiutato la richiesta (HTTP %(code)s): %(detail)s"
+
+#: app/services/vision.py:344
+#, python-format
+msgid "Anthropic API error (HTTP %(code)s) — try again"
+msgstr "Errore dell'API Anthropic (HTTP %(code)s): riprova"
+
+#: app/services/vision.py:346
+msgid "Could not reach the Anthropic API — check your connection"
+msgstr "Impossibile raggiungere l'API Anthropic: controlla la connessione"
+
+#: app/services/vision.py:351
+msgid "The model declined to process this image"
+msgstr "Il modello si è rifiutato di elaborare quest'immagine"
+
+#: app/services/vision.py:357 app/services/vision.py:421
+msgid "The model returned an unreadable response — try again"
+msgstr "Il modello ha dato una risposta illeggibile: riprova"
+
+#: app/services/vision.py:371
+msgid "OpenAI API key is not configured"
+msgstr "La chiave API OpenAI non è configurata"
+
+#: app/services/vision.py:397
+#, python-format
+msgid "Could not reach the OpenAI API at %(url)s"
+msgstr "Impossibile raggiungere l'API OpenAI su %(url)s"
+
+#: app/services/vision.py:399
+msgid "OpenAI API key was rejected — check it in Settings"
+msgstr "La chiave API OpenAI è stata rifiutata: controllala nelle Impostazioni"
+
+#: app/services/vision.py:416
+msgid "The OpenAI API returned an unexpected response — try again"
+msgstr "L'API OpenAI ha dato una risposta inattesa: riprova"
+
+#: app/services/vision.py:442
+#, python-format
+msgid "Could not reach Ollama at %(url)s"
+msgstr "Impossibile raggiungere Ollama su %(url)s"
+
+#: app/services/vision.py:444
+#, python-format
+msgid "Ollama model %(quoted)s not found — pull it with: ollama pull %(model)s"
+msgstr "Modello Ollama %(quoted)s non trovato: scaricalo con: ollama pull %(model)s"
+
+#: app/services/vision.py:447
+#, python-format
+msgid "Ollama error (HTTP %(code)s)"
+msgstr "Errore di Ollama (HTTP %(code)s)"
+
+#: app/services/vision.py:454
+msgid "The model returned an unreadable response — try a different model"
+msgstr "Il modello ha dato una risposta illeggibile: prova un modello diverso"
 
 #: app/services/wrapups.py:35
 msgid "January"
