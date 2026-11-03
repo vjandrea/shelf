@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import httpx
 
+from app import i18n
 from app.services import issn_portal, periodical_records, periodicals, provider_result
 
 
@@ -74,7 +75,7 @@ def attach_issue_identity(
     """
     title = (publication_title or candidate.get("publication_title") or "").strip()
     if not title:
-        raise ValueError("Periodical publication title is required")
+        raise ValueError(i18n.gettext("Periodical publication title is required"))
 
     publication_id = periodical_records.upsert_publication(
         db,

@@ -15,6 +15,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from app import i18n
 from app.services.igdb import PLATFORM_IDS
 
 PAGE_SIZE = 500
@@ -67,16 +68,16 @@ def _base_url(value: str) -> str:
     value = (value or "").strip().rstrip("/")
     parsed = urlsplit(value)
     if not value or parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        raise RomMError("RomM URL must be an HTTP or HTTPS URL")
+        raise RomMError(i18n.gettext("RomM URL must be an HTTP or HTTPS URL"))
     if parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise RomMError("RomM URL is invalid")
+        raise RomMError(i18n.gettext("RomM URL is invalid"))
     return value
 
 
 def _headers(token: str) -> dict[str, str]:
     token = (token or "").strip()
     if not token:
-        raise RomMError("RomM API token is required")
+        raise RomMError(i18n.gettext("RomM API token is required"))
     return {"Authorization": f"Bearer {token}", "Accept": "application/json"}
 
 
@@ -105,7 +106,7 @@ def shelf_platform_slug(platform: dict[str, Any]) -> str:
     platform_id = str(platform.get("id") or "").strip()
     if platform_id:
         return f"romm{_compact_slug(platform_id) or 'platform'}"
-    raise RomMError("RomM platform has no usable identity")
+    raise RomMError(i18n.gettext("RomM platform has no usable identity"))
 
 
 def normalise_platform(platform: dict[str, Any]) -> dict[str, Any] | None:
@@ -141,15 +142,15 @@ async def fetch_platforms(
     try:
         response = await client.get(f"{base}/api/platforms", headers=_headers(token))
     except (httpx.TimeoutException, httpx.TransportError) as exc:
-        raise RomMError("Could not connect to RomM") from exc
+        raise RomMError(i18n.gettext("Could not connect to RomM")) from exc
     if response.status_code != 200:
         raise RomMError(f"RomM returned HTTP {response.status_code}")
     try:
         raw = response.json()
     except ValueError as exc:
-        raise RomMError("RomM returned invalid JSON") from exc
+        raise RomMError(i18n.gettext("RomM returned invalid JSON")) from exc
     if not isinstance(raw, list):
-        raise RomMError("RomM returned an invalid platform list")
+        raise RomMError(i18n.gettext("RomM returned an invalid platform list"))
 
     result = []
     for row in raw:
@@ -243,7 +244,7 @@ async def _fetch_page(
             response = await client.get(f"{base}/api/roms", headers=headers, params=params)
         except (httpx.TimeoutException, httpx.TransportError) as exc:
             if attempt >= PAGE_RETRIES:
-                raise RomMError("RomM ROM listing remained unavailable") from exc
+                raise RomMError(i18n.gettext("RomM ROM listing remained unavailable")) from exc
             await asyncio.sleep(PAGE_RETRY_BACKOFF * (2**attempt))
             continue
 
@@ -256,11 +257,11 @@ async def _fetch_page(
         raise RomMError(f"RomM returned HTTP {response.status_code} while listing ROMs")
 
     if response is None or response.status_code != 200:
-        raise RomMError("RomM ROM listing failed")
+        raise RomMError(i18n.gettext("RomM ROM listing failed"))
     try:
         data = response.json()
     except ValueError as exc:
-        raise RomMError("RomM returned invalid ROM JSON") from exc
+        raise RomMError(i18n.gettext("RomM returned invalid ROM JSON")) from exc
 
     if isinstance(data, list):
         rows = data
@@ -269,9 +270,9 @@ async def _fetch_page(
         rows = data.get("items") or []
         total = data.get("total") if isinstance(data.get("total"), int) else None
     else:
-        raise RomMError("RomM returned an invalid ROM page")
+        raise RomMError(i18n.gettext("RomM returned an invalid ROM page"))
     if not isinstance(rows, list):
-        raise RomMError("RomM returned an invalid ROM page")
+        raise RomMError(i18n.gettext("RomM returned an invalid ROM page"))
     return rows, total
 
 
@@ -291,7 +292,7 @@ async def iter_rom_candidates(
     headers = _headers(token)
     platform_id = str(platform.get("id") or "").strip()
     if not platform_id:
-        raise RomMError("RomM platform has no id")
+        raise RomMError(i18n.gettext("RomM platform has no id"))
 
     offset = 0
     expected_total: int | None = None
@@ -320,7 +321,7 @@ async def iter_rom_candidates(
         if not rows:
             break
         if emitted == 0:
-            raise RomMError("RomM pagination made no progress")
+            raise RomMError(i18n.gettext("RomM pagination made no progress"))
         offset += len(rows)
         if expected_total is not None and offset >= expected_total:
             break
@@ -333,5 +334,5 @@ def browser_rom_url(romm_url: str, romm_id: str, *, public_url: str | None = Non
     base = _base_url(public_url or romm_url)
     clean_id = str(romm_id or "").strip()
     if not clean_id:
-        raise RomMError("RomM ROM id is required")
+        raise RomMError(i18n.gettext("RomM ROM id is required"))
     return f"{base}/rom/{clean_id}"
