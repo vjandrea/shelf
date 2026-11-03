@@ -17,6 +17,7 @@ from __future__ import annotations
 import sqlite3
 from typing import Any
 
+from app import i18n
 from app.config import MEDIA_TYPES
 from app.services import isbn as isbn_svc
 from app.services.item_write import IdentifierInTrash, insert_item, update_item_fields
@@ -45,7 +46,7 @@ def _canonical_isbn(value: Any) -> str | None:
 def _kind(candidate: dict[str, Any]) -> str:
     kind = str(candidate.get("library_kind") or "").strip().casefold()
     if kind not in KOMGA_KINDS:
-        raise KomgaPersistenceError("Komga library must be classified as Comic or Manga")
+        raise KomgaPersistenceError(i18n.gettext("Komga library must be classified as Comic or Manga"))
     return kind
 
 
@@ -117,7 +118,7 @@ def _fill_missing_fields(db, item_id: int, candidate: dict[str, Any]) -> None:
     """Enrich an existing non-Komga item without overwriting user metadata."""
     row = db.execute("SELECT * FROM items_live WHERE id = ?", (item_id,)).fetchone()
     if row is None:
-        raise KomgaPersistenceError("Shelf item not found")
+        raise KomgaPersistenceError(i18n.gettext("Shelf item not found"))
 
     fields: dict[str, Any] = {}
     for name in (
@@ -148,15 +149,19 @@ def _reclassify_owned_record(db, existing, kind: str, media_type: str) -> None:
     if existing["media_type"] != media_type:
         if existing["source"] != "komga":
             raise KomgaPersistenceError(
-                "This Komga holding is attached to a manually catalogued item; "
-                "change its Comic/Manga type explicitly in Shelf before re-syncing"
+                i18n.gettext(
+                    "This Komga holding is attached to a manually catalogued item; "
+                    "change its Comic/Manga type explicitly in Shelf before re-syncing"
+                )
             )
         try:
             update_item_fields(db, existing["item_id"], {"media_type": media_type})
         except (sqlite3.IntegrityError, IdentifierInTrash) as exc:
             raise KomgaPersistenceError(
-                "Changing this Komga library between Comic and Manga would collide "
-                "with an existing Shelf edition"
+                i18n.gettext(
+                    "Changing this Komga library between Comic and Manga would collide "
+                    "with an existing Shelf edition"
+                )
             ) from exc
 
     if existing["kind"] != kind:
@@ -185,7 +190,7 @@ def persist_candidate(db, candidate: dict[str, Any]) -> dict[str, Any]:
     library_id = _clean(candidate.get("komga_library_id"))
     title = _clean(candidate.get("title"))
     if not komga_id or not library_id or not title:
-        raise KomgaPersistenceError("Komga candidate is missing id, library or title")
+        raise KomgaPersistenceError(i18n.gettext("Komga candidate is missing id, library or title"))
 
     kind = _kind(candidate)
     media_type = _shelf_media_type(kind)
@@ -204,8 +209,10 @@ def persist_candidate(db, candidate: dict[str, Any]) -> dict[str, Any]:
                 update_item_fields(db, item_id, _refresh_fields(fields))
             except IdentifierInTrash as exc:
                 raise KomgaPersistenceError(
-                    "Refreshing this Komga holding would give it an ISBN an "
-                    "item in Trash already holds"
+                    i18n.gettext(
+                        "Refreshing this Komga holding would give it an ISBN an "
+                        "item in Trash already holds"
+                    )
                 ) from exc
         else:
             _fill_missing_fields(db, item_id, candidate)

@@ -12,6 +12,8 @@ never be guessed from a title alone.
 
 from __future__ import annotations
 
+from app import i18n
+
 
 LINK_TYPES = frozenset({"format", "related", "adaptation"})
 
@@ -27,7 +29,7 @@ def link_items(
     if item_a_id == item_b_id:
         return False
     if link_type not in LINK_TYPES:
-        raise ValueError("Unknown related-media link type")
+        raise ValueError(i18n.gettext("Unknown related-media link type"))
 
     rows = db.execute(
         "SELECT id FROM items_live WHERE id IN (?, ?)", (item_a_id, item_b_id)

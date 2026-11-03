@@ -9,6 +9,8 @@ without every caller needing to understand the tree at once.
 
 import sqlite3
 
+from app import i18n
+
 
 class LocationError(ValueError):
     """Base class for location-tree validation failures."""
@@ -41,7 +43,7 @@ def _row(db, location_id: int):
         (location_id,),
     ).fetchone()
     if not row:
-        raise LocationNotFound("Location not found")
+        raise LocationNotFound(i18n.gettext("Location not found"))
     return row
 
 
@@ -74,7 +76,7 @@ def _assert_parent_not_in_subtree(db, location_id: int,
     if parent_id is None:
         return
     if parent_id == location_id:
-        raise InvalidLocationParent("A location cannot be its own parent")
+        raise InvalidLocationParent(i18n.gettext("A location cannot be its own parent"))
 
     in_subtree = db.execute(
         "WITH RECURSIVE subtree(id) AS ("
@@ -85,7 +87,7 @@ def _assert_parent_not_in_subtree(db, location_id: int,
         (location_id, parent_id),
     ).fetchone()
     if in_subtree:
-        raise InvalidLocationParent("A location cannot be moved inside itself")
+        raise InvalidLocationParent(i18n.gettext("A location cannot be moved inside itself"))
 
 
 def create_location(db, label: str, *, parent_id: int | None = None,
@@ -93,11 +95,11 @@ def create_location(db, label: str, *, parent_id: int | None = None,
     """Create one location node and return its id."""
     label = label.strip()
     if not label:
-        raise LocationError("Location name cannot be blank")
+        raise LocationError(i18n.gettext("Location name cannot be blank"))
 
     parent = _parent(db, parent_id)
     if _duplicate_exists(db, label, parent_id):
-        raise DuplicateLocation("A location with that name already exists here")
+        raise DuplicateLocation(i18n.gettext("A location with that name already exists here"))
 
     try:
         cursor = db.execute(
@@ -106,7 +108,7 @@ def create_location(db, label: str, *, parent_id: int | None = None,
             (_full_name(parent, label), label, parent_id, sort_order),
         )
     except sqlite3.IntegrityError as exc:
-        raise DuplicateLocation("A location with that name already exists here") from exc
+        raise DuplicateLocation(i18n.gettext("A location with that name already exists here")) from exc
     return cursor.lastrowid
 
 
@@ -133,7 +135,7 @@ def resolve_or_create(db, name: str) -> tuple[int, bool]:
     """
     name = name.strip()
     if not name:
-        raise LocationError("Location name cannot be blank")
+        raise LocationError(i18n.gettext("Location name cannot be blank"))
     found = find_by_path(db, name)
     if found is not None:
         return found, False
@@ -164,13 +166,13 @@ def update_location(db, location_id: int, label: str, *,
     """Rename/reparent one node and update every descendant's full path."""
     label = label.strip()
     if not label:
-        raise LocationError("Location name cannot be blank")
+        raise LocationError(i18n.gettext("Location name cannot be blank"))
 
     _row(db, location_id)
     parent = _parent(db, parent_id)
     _assert_parent_not_in_subtree(db, location_id, parent_id)
     if _duplicate_exists(db, label, parent_id, exclude_id=location_id):
-        raise DuplicateLocation("A location with that name already exists here")
+        raise DuplicateLocation(i18n.gettext("A location with that name already exists here"))
 
     try:
         db.execute(
@@ -180,7 +182,7 @@ def update_location(db, location_id: int, label: str, *,
         )
         _rewrite_descendant_paths(db, location_id)
     except sqlite3.IntegrityError as exc:
-        raise DuplicateLocation("A location with that name already exists here") from exc
+        raise DuplicateLocation(i18n.gettext("A location with that name already exists here")) from exc
 
 
 def delete_location(db, location_id: int) -> None:
@@ -189,7 +191,7 @@ def delete_location(db, location_id: int) -> None:
     if db.execute(
         "SELECT 1 FROM locations WHERE parent_id = ? LIMIT 1", (location_id,)
     ).fetchone():
-        raise LocationHasChildren("Move or remove child locations first")
+        raise LocationHasChildren(i18n.gettext("Move or remove child locations first"))
 
     # Preserve the single item-write funnel while clearing the legacy
     # compatibility projection. This also clears the primary copy through

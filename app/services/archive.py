@@ -35,6 +35,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
+from app import i18n
 from app import config
 from app.services import isbn as isbn_svc
 from app.services import item_copies
@@ -645,14 +646,14 @@ class ArchiveReader:
         try:
             size = self._path.stat().st_size
         except OSError:
-            raise ArchiveError("The uploaded file could not be read.")
+            raise ArchiveError(i18n.gettext("The uploaded file could not be read."))
         if size > MAX_UPLOAD_SIZE:
-            raise ArchiveError("Archive is too large (max 500 MB).")
+            raise ArchiveError(i18n.gettext("Archive is too large (max 500 MB)."))
 
         try:
             self._zf = zipfile.ZipFile(self._path)
         except (zipfile.BadZipFile, OSError):
-            raise ArchiveError("That file is not a zip archive.")
+            raise ArchiveError(i18n.gettext("That file is not a zip archive."))
 
         try:
             self._validate_layout()
@@ -690,22 +691,22 @@ class ArchiveReader:
             name = info.filename
             reason = _reject_entry_name(name)
             if reason:
-                raise ArchiveError(f"Archive contains an {reason} — refusing to read it.")
+                raise ArchiveError(i18n.gettext("Archive contains an %(reason)s — refusing to read it.") % {"reason": reason})
             if info.is_dir():
-                raise ArchiveError("Archive contains a directory entry — refusing to read it.")
+                raise ArchiveError(i18n.gettext("Archive contains a directory entry — refusing to read it."))
             # Unix mode is in the high 16 bits of external_attr; a symlink
             # would let an extracted cover point anywhere on the host.
             if (info.external_attr >> 16) & 0o170000 == 0o120000:
-                raise ArchiveError("Archive contains a symlink — refusing to read it.")
+                raise ArchiveError(i18n.gettext("Archive contains a symlink — refusing to read it."))
             if name in seen:
-                raise ArchiveError("Archive contains duplicate entries — refusing to read it.")
+                raise ArchiveError(i18n.gettext("Archive contains duplicate entries — refusing to read it."))
             seen.add(name)
 
             # Header sizes are attacker-controlled, so this is only a cheap
             # early-out; the real limits are enforced on actual reads below.
             declared_total += info.file_size
             if declared_total > MAX_TOTAL_UNCOMPRESSED:
-                raise ArchiveError("Archive is too large when uncompressed.")
+                raise ArchiveError(i18n.gettext("Archive is too large when uncompressed."))
 
             self._entries[name] = info
             if name.startswith(_COVER_PREFIX):
@@ -714,16 +715,16 @@ class ArchiveReader:
         for required in ("manifest.json", "library.json"):
             if required not in self._entries:
                 raise ArchiveError(
-                    "That zip is not a Shelf archive (no {} inside).".format(required)
+                    i18n.gettext("That zip is not a Shelf archive (no {} inside).").format(required)
                 )
 
     def _load_manifest(self) -> dict:
         manifest = self._read_json("manifest.json")
         if manifest.get("format") != FORMAT_NAME:
-            raise ArchiveError("That zip is not a Shelf portable archive.")
+            raise ArchiveError(i18n.gettext("That zip is not a Shelf portable archive."))
         version = manifest.get("version")
         if not isinstance(version, int) or isinstance(version, bool) or version < 1:
-            raise ArchiveError("Archive has an unrecognized format version.")
+            raise ArchiveError(i18n.gettext("Archive has an unrecognized format version."))
         if version > FORMAT_VERSION:
             raise ArchiveError(
                 f"This archive was made by a newer version of Shelf "
@@ -739,7 +740,7 @@ class ArchiveReader:
         a central-directory header ever understates an entry's real size."""
         self._budget -= n
         if self._budget < 0:
-            raise ArchiveError("Archive is too large when uncompressed.")
+            raise ArchiveError(i18n.gettext("Archive is too large when uncompressed."))
 
     def _read_bounded(self, info: zipfile.ZipInfo, limit: int, what: str) -> bytes:
         """Read at most `limit` bytes of actual decompressed data, then fail.
