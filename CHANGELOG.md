@@ -9,7 +9,8 @@ All notable changes to Shelf are documented here. The format follows
 ### Added
 
 - **Shelf starts to speak Italian, starting with the page shell.** The 
-  navigation, sign-in, first-run setup and the Account dialog are translated. 
+  navigation, sign-in, first-run setup, the Account dialog and Browse are 
+  translated. 
   Each user picks a language under Account → Profile → Language; the default, 
   Automatic, follows the browser, so an Italian browser gets Italian with no 
   setup. The feature pages are still in English and follow in later releases, 
