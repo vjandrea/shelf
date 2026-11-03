@@ -15,6 +15,7 @@ import httpx
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import FileResponse, JSONResponse
 
+from app import i18n
 from app.auth import require_role
 from app.features import require_feature
 from app.config import HTTP_TIMEOUT
@@ -156,7 +157,7 @@ async def store_queue(request: Request, _=Depends(require_role("editor")),
     try:
         body = await request.json()
     except Exception:
-        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+        return JSONResponse({"error": i18n.gettext("Invalid JSON body")}, status_code=400)
     isbns = body.get("isbns")
     if not isinstance(isbns, list) or not all(isinstance(x, str) for x in isbns):
         return JSONResponse({"error": "isbns must be a list of strings"}, status_code=400)

@@ -168,7 +168,7 @@ async def cover_search(request: Request, item_id: int, query: str | None = None,
         # told its provider is unconfigured (G15).
         creds = {} if not item else _cover_search_credentials(db, item["media_type"])
     if not item:
-        return HTMLResponse("Not found", status_code=404)
+        return HTMLResponse(i18n.gettext("Not found"), status_code=404)
 
     search_query = (query or "").strip() or item["title"]
 
@@ -229,7 +229,7 @@ async def cover_select(
         # results (G15 again, for the same env-only reason).
         creds = {} if not item else _cover_search_credentials(db, item["media_type"])
     if not item:
-        return HTMLResponse("Not found", status_code=404)
+        return HTMLResponse(i18n.gettext("Not found"), status_code=404)
 
     search_query = (query or "").strip() or item["title"]
 
@@ -267,7 +267,7 @@ async def cover_from_url(
     with get_db() as db:
         item = db.execute("SELECT id FROM items_live WHERE id = ?", (item_id,)).fetchone()
     if not item:
-        return HTMLResponse("Not found", status_code=404)
+        return HTMLResponse(i18n.gettext("Not found"), status_code=404)
 
     cover_path = await manual_cover.download(item_id, url)
     if not cover_path:
@@ -302,7 +302,7 @@ async def cover_upload(request: Request, item_id: int, _=Depends(require_role("e
     with get_db() as db:
         item = db.execute("SELECT id FROM items_live WHERE id = ?", (item_id,)).fetchone()
     if not item:
-        return HTMLResponse("Not found", status_code=404)
+        return HTMLResponse(i18n.gettext("Not found"), status_code=404)
 
     form = await request.form()
     cover_file = form.get("cover")
@@ -354,7 +354,7 @@ async def cover_remove(item_id: int, _=Depends(require_role("editor"))):
     with get_db() as db:
         item = db.execute("SELECT id FROM items_live WHERE id = ?", (item_id,)).fetchone()
         if not item:
-            return HTMLResponse("Not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Not found"), status_code=404)
         db.execute(
             "UPDATE items SET cover_path = NULL, cover_edition_isbn = NULL, cover_edition_language = NULL, cover_review_dismissed = 0, "
             "updated_at = datetime('now') WHERE id = ?",
@@ -462,7 +462,7 @@ async def bulk_retry_covers_stream(request: Request, _=Depends(require_role("adm
             await queue.put({"type": "done", **results})
         except Exception:
             logger.exception("Bulk cover retry failed")
-            await queue.put({"type": "error", "message": "Cover retry failed — check server logs"})
+            await queue.put({"type": "error", "message": i18n.gettext("Cover retry failed — check server logs")})
 
     async def event_stream():
         task = asyncio.create_task(run_retry())

@@ -107,7 +107,7 @@ async def add_tag(request: Request, item_id: int, name: str = Form(...),
                   _=Depends(require_role("editor"))):
     tag_name = tags_svc.normalize_tag(name)
     if not tag_name:
-        return HTMLResponse("Tag name required", status_code=400)
+        return HTMLResponse(i18n.gettext("Tag name required"), status_code=400)
 
     with get_db() as db:
         # The liveness check and the write share the write lock, or an item
@@ -117,7 +117,7 @@ async def add_tag(request: Request, item_id: int, name: str = Form(...),
             "SELECT id, media_type FROM items_live WHERE id = ?", (item_id,)
         ).fetchone()
         if not item:
-            return HTMLResponse("Item not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Item not found"), status_code=404)
         tags_svc.attach_tags(db, item_id, [tag_name])
         return _render_fragment(request, db, item_id, item["media_type"])
 
@@ -133,11 +133,11 @@ async def remove_tag(request: Request, item_id: int, tag_id: int,
             "SELECT id, media_type FROM items_live WHERE id = ?", (item_id,)
         ).fetchone()
         if not item:
-            return HTMLResponse("Item not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Item not found"), status_code=404)
 
         removed = tags_svc.detach_tags(db, item_id, [tag_id])
         if removed != 1:
-            return HTMLResponse("Tag not found on item", status_code=404)
+            return HTMLResponse(i18n.gettext("Tag not found on item"), status_code=404)
 
         # Garbage-collect orphaned tags so the Browse dropdown stays clean,
         # but only after an association was actually removed.

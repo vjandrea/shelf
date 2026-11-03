@@ -104,7 +104,7 @@ async def render_scan_candidate(
     """Render publication metadata plus issue-confirmation fields for a 977 scan."""
     serial = periodicals.parse_barcode(raw)
     if serial is None:
-        return HTMLResponse("Not a valid periodical barcode", status_code=400)
+        return HTMLResponse(i18n.gettext("Not a valid periodical barcode"), status_code=400)
 
     existing = find_periodical_item(raw)
     if existing:
@@ -258,7 +258,7 @@ async def confirm_periodical_issue(
     serial = periodicals.parse_barcode(raw_barcode)
     publication_title = publication_title.strip()
     if serial is None or not publication_title:
-        return HTMLResponse("A valid periodical barcode and publication title are required", status_code=400)
+        return HTMLResponse(i18n.gettext("A valid periodical barcode and publication title are required"), status_code=400)
     if mode not in {"add", "wishlist"}:
         mode = "add"
 

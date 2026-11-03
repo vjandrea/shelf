@@ -21,6 +21,7 @@ import httpx
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
+from app import i18n
 from app.auth import require_role
 from app.config import HTTP_TIMEOUT
 from app.database import get_db
@@ -62,7 +63,7 @@ async def cover_review_select(
             "SELECT id FROM items_live WHERE id = ?", (item_id,)
         ).fetchone()
         if not exists:
-            return HTMLResponse("Not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Not found"), status_code=404)
         # Capture the ordering key BEFORE the write. Setting a cover bumps
         # `updated_at`, which would move the row to the front of the ordering,
         # so a seek computed afterwards walks the reviewer back to the top.
@@ -121,7 +122,7 @@ async def cover_review_upload(
     with get_db() as db:
         item = db.execute("SELECT id FROM items_live WHERE id = ?", (item_id,)).fetchone()
         if not item:
-            return HTMLResponse("Not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Not found"), status_code=404)
         key = seek_key(db, item_id)
 
     form = await request.form()
@@ -180,7 +181,7 @@ async def cover_review_dismiss(
     with get_db() as db:
         item = db.execute("SELECT id FROM items_live WHERE id = ?", (item_id,)).fetchone()
         if not item:
-            return HTMLResponse("Not found", status_code=404)
+            return HTMLResponse(i18n.gettext("Not found"), status_code=404)
         # Same pre-read as the write verbs: the UPDATE bumps updated_at.
         key = seek_key(db, item_id)
         db.execute(

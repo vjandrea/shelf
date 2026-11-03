@@ -582,6 +582,14 @@ msgstr ""
 msgid "Merge {count} records into \"{title}\"? The merged-away records cannot be restored."
 msgstr ""
 
+#: static/js/intake-capture.js:78
+msgid "No live camera stream to grab a frame from."
+msgstr ""
+
+#: static/js/intake-capture.js:88
+msgid "Failed to encode captured frame as JPEG."
+msgstr ""
+
 #: static/js/intake.js:186
 msgid "No camera found. Use Choose photo instead."
 msgstr ""
@@ -630,6 +638,10 @@ msgstr ""
 
 #: static/js/item_edit.js:158
 msgid "That is not a valid UPC-A / EAN-13 retail barcode. Try again."
+msgstr ""
+
+#: static/js/komga-item.js:25
+msgid "Open in Komga"
 msgstr ""
 
 #: static/js/komga-settings.js:40 static/js/romm-settings.js:36
@@ -713,6 +725,10 @@ msgstr ""
 
 #: static/js/location-order.js:81
 msgid "Ordering…"
+msgstr ""
+
+#: static/js/romm-item.js:25
+msgid "Open in RomM"
 msgstr ""
 
 #: static/js/romm-settings.js:36

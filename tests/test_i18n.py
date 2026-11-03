@@ -332,3 +332,10 @@ def test_settings_komga_romm_and_discogs_are_translated(admin_client):
     page = admin_client.get("/settings").text
     for text in ("Prova la connessione", "Token di accesso personale"):
         assert text in page, text
+
+
+def test_user_admin_messages_are_translated(admin_client):
+    admin_client.post("/api/account/language", data={"language": "it"})
+
+    short = admin_client.post("/api/users", data={"username": "x", "password": "12345678", "role": "viewer"}).json()
+    assert short["message"] == "Il nome utente deve contenere almeno 2 caratteri"
