@@ -300,3 +300,11 @@ def test_settings_data_tab_is_translated(admin_client):
     for text in ("Backup e ripristino", "Archivio portabile", "illeggibili senza <code>encryption.key</code>", '"Plus {list}.": "Inoltre: {list}."'):
         assert text in page, text
     assert admin_client.post("/api/import/csv", data={"mode": "bogus"}).json().get("error", "").startswith(("Modalità", "Nessun"))
+
+
+def test_settings_sync_integrations_are_translated(admin_client):
+    admin_client.post("/api/account/language", data={"language": "it"})
+
+    page = admin_client.get("/settings").text
+    for text in ("Sincronizzazione Audiobookshelf", "Importa la biblioteca da Hardcover", '"Import from Hardcover": "Importa da Hardcover"'):
+        assert text in page, text
