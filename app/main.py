@@ -736,6 +736,8 @@ templates.env.globals["search_langs"] = SEARCH_LANGS
 # The creator field's label per media type — declared once in app/config.py.
 # A global rather than route context, so neither host route grows a key for it.
 templates.env.globals["creator_labels"] = CREATOR_LABELS
+# The same map translated per request, for the add forms' data-creator-labels.
+templates.env.globals["translated_creator_labels"] = lambda: {k: i18n.gettext(v) for k, v in CREATOR_LABELS.items()}
 templates.env.globals["creator_label"] = creator_label
 # Each cover's box shape per media type — declared once in app/config.py, and
 # carried as data-cover-shape so one CSS rule squares every music cover.
