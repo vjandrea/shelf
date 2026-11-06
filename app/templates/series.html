@@ -272,8 +272,8 @@
                 </div>
                 <template x-if="result.buy_links_disclosure">
                     <p class="text-xs text-shelf-muted mt-2" data-testid="series-buy-links-disclosure">
-                        Affiliate links carrying your own tags (Settings → Library → Buy links).
-                        <span x-show="result.buy_links_disclosure.bookshop">Bookshop.org supports independent bookstores.</span>
+                        {{ _('Affiliate links carrying your own tags (Settings &rarr; Library &rarr; Buy links).') }}
+                        <span x-show="result.buy_links_disclosure.bookshop">{{ _('Bookshop.org supports independent bookstores.') }}</span>
                     </p>
                 </template>
             </div>
