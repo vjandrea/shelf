@@ -379,6 +379,14 @@ msgstr ""
 msgid "Watch wishlist list prices nightly and send a drop digest."
 msgstr ""
 
+#: app/features.py:223 app/templates/fragments/settings/buy_links.html:7
+msgid "Buy links"
+msgstr ""
+
+#: app/features.py:224
+msgid "Bookshop.org and Amazon links on wishlisted books and missing series volumes, carrying your own affiliate tags."
+msgstr ""
+
 #: app/features.py:230 app/nav.py:42 app/templates/music.html:2
 #: app/templates/music.html:8 app/templates/music_item.html:2
 msgid "Music"
@@ -1313,6 +1321,22 @@ msgstr ""
 #: app/routers/settings.py:238
 #, python-format
 msgid "Books per night must be a whole number from 1 to %(max)s"
+msgstr ""
+
+#: app/routers/settings.py:266
+msgid "Bookshop.org affiliate id is digits only, up to 12"
+msgstr ""
+
+#: app/routers/settings.py:268
+msgid "Amazon tag may use letters, digits and hyphens, up to 40 characters"
+msgstr ""
+
+#: app/routers/settings.py:270
+msgid "Unknown Bookshop.org site"
+msgstr ""
+
+#: app/routers/settings.py:272
+msgid "Unknown Amazon marketplace"
 msgstr ""
 
 #: app/routers/settings.py:298
@@ -2819,6 +2843,18 @@ msgstr ""
 msgid "was %(price)s on %(date)s"
 msgstr ""
 
+#: app/templates/item_detail.html:60
+msgid "Buy:"
+msgstr ""
+
+#: app/templates/item_detail.html:61 app/templates/series.html:275
+msgid "Affiliate links carrying your own tags (Settings &rarr; Library &rarr; Buy links)."
+msgstr ""
+
+#: app/templates/item_detail.html:61 app/templates/series.html:276
+msgid "Bookshop.org supports independent bookstores."
+msgstr ""
+
 #: app/templates/item_detail.html:76
 msgid "Type:"
 msgstr ""
@@ -3286,6 +3322,7 @@ msgstr ""
 
 #: app/templates/fragments/account_menu.html:132
 #: app/templates/fragments/item_copy_edit.html:99
+#: app/templates/fragments/settings/buy_links.html:46
 #: app/templates/fragments/settings/discogs.html:22
 #: app/templates/fragments/settings/integrations.html:95
 #: app/templates/fragments/settings/integrations.html:160
@@ -5508,6 +5545,26 @@ msgstr[0] ""
 
 #: app/templates/fragments/trash_nag.html:13
 msgid "Review expired items"
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:9
+msgid "These links pay you, through your own affiliate accounts. Shelf earns nothing. A Bookshop.org link without an ISBN is a plain search and pays nobody."
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:15
+msgid "Bookshop.org affiliate id (blank turns it off)"
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:21
+msgid "Bookshop.org site"
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:30
+msgid "Amazon Associates tag (blank turns it off)"
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:36
+msgid "Amazon marketplace"
 msgstr ""
 
 #: app/templates/fragments/settings/data.html:12

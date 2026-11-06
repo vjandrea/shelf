@@ -356,3 +356,12 @@ def test_identifier_in_trash_message_is_translated(db):
         i18n.current_locale.reset(token)
     assert str(exc.value) == ("“Cestinato” è nel cestino e usa già questo ISBN. Ripristinalo dal cestino "
                               "o eliminalo definitivamente prima di aggiungere questo elemento.")
+
+
+def test_buy_links_card_is_translated(admin_client):
+    admin_client.post("/api/account/language", data={"language": "it"})
+
+    page = admin_client.get("/settings").text
+    assert "Link di acquisto" in page and "Marketplace Amazon" in page
+    refused = admin_client.post("/api/settings/buy-links", data={"buy_links_bookshop_id": "abc"})
+    assert refused.json()["message"] == "L'ID di affiliazione Bookshop.org contiene solo cifre, al massimo 12"

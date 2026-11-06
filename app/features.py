@@ -220,8 +220,8 @@ FEATURES: dict[str, Feature] = {
         configured=_price_alerts_configured,
     ),
     "buy_links": Feature(
-        label="Buy links",
-        description="Bookshop.org and Amazon links on wishlisted books and missing series volumes, carrying your own affiliate tags.",
+        label=N_("Buy links"),
+        description=N_("Bookshop.org and Amazon links on wishlisted books and missing series volumes, carrying your own affiliate tags."),
         profile="everything",
         entry_path="/settings",
         configured=_buy_links_configured,

@@ -263,13 +263,13 @@ async def update_buy_links_settings(
     bookshop_host = buy_links_bookshop_host.strip() or buy_links.DEFAULT_BOOKSHOP_HOST
     amazon_host = buy_links_amazon_host.strip() or buy_links.DEFAULT_AMAZON_HOST
     if bookshop_id and not buy_links.BOOKSHOP_ID_RE.fullmatch(bookshop_id):
-        return {"ok": False, "message": "Bookshop.org affiliate id is digits only, up to 12"}
+        return {"ok": False, "message": i18n.gettext("Bookshop.org affiliate id is digits only, up to 12")}
     if amazon_tag and not buy_links.AMAZON_TAG_RE.fullmatch(amazon_tag):
-        return {"ok": False, "message": "Amazon tag may use letters, digits and hyphens, up to 40 characters"}
+        return {"ok": False, "message": i18n.gettext("Amazon tag may use letters, digits and hyphens, up to 40 characters")}
     if bookshop_host not in buy_links.BOOKSHOP_HOSTS:
-        return {"ok": False, "message": "Unknown Bookshop.org site"}
+        return {"ok": False, "message": i18n.gettext("Unknown Bookshop.org site")}
     if amazon_host not in buy_links.AMAZON_HOSTS:
-        return {"ok": False, "message": "Unknown Amazon marketplace"}
+        return {"ok": False, "message": i18n.gettext("Unknown Amazon marketplace")}
 
     with get_db() as db:
         _upsert_setting(db, "buy_links_bookshop_id", bookshop_id)

@@ -376,6 +376,14 @@ msgstr "Avvisi di prezzo"
 msgid "Watch wishlist list prices nightly and send a drop digest."
 msgstr "Controlla ogni notte i prezzi della lista desideri e invia un riepilogo dei ribassi."
 
+#: app/features.py:223 app/templates/fragments/settings/buy_links.html:7
+msgid "Buy links"
+msgstr "Link di acquisto"
+
+#: app/features.py:224
+msgid "Bookshop.org and Amazon links on wishlisted books and missing series volumes, carrying your own affiliate tags."
+msgstr "Link a Bookshop.org e Amazon sui libri in lista desideri e sui volumi mancanti delle serie, con i tuoi tag di affiliazione."
+
 #: app/features.py:230 app/nav.py:42 app/templates/music.html:2
 #: app/templates/music.html:8 app/templates/music_item.html:2
 msgid "Music"
@@ -1311,6 +1319,22 @@ msgstr "La soglia di ribasso deve essere un numero intero da 1 a %(max)s"
 #, python-format
 msgid "Books per night must be a whole number from 1 to %(max)s"
 msgstr "I libri per notte devono essere un numero intero da 1 a %(max)s"
+
+#: app/routers/settings.py:266
+msgid "Bookshop.org affiliate id is digits only, up to 12"
+msgstr "L'ID di affiliazione Bookshop.org contiene solo cifre, al massimo 12"
+
+#: app/routers/settings.py:268
+msgid "Amazon tag may use letters, digits and hyphens, up to 40 characters"
+msgstr "Il tag Amazon può contenere lettere, cifre e trattini, al massimo 40 caratteri"
+
+#: app/routers/settings.py:270
+msgid "Unknown Bookshop.org site"
+msgstr "Sito Bookshop.org sconosciuto"
+
+#: app/routers/settings.py:272
+msgid "Unknown Amazon marketplace"
+msgstr "Marketplace Amazon sconosciuto"
 
 #: app/routers/settings.py:298
 #, python-format
@@ -2818,6 +2842,18 @@ msgstr "al %(date)s"
 msgid "was %(price)s on %(date)s"
 msgstr "era %(price)s il %(date)s"
 
+#: app/templates/item_detail.html:60
+msgid "Buy:"
+msgstr "Acquista:"
+
+#: app/templates/item_detail.html:61 app/templates/series.html:275
+msgid "Affiliate links carrying your own tags (Settings &rarr; Library &rarr; Buy links)."
+msgstr "Link di affiliazione con i tuoi tag (Impostazioni &rarr; Biblioteca &rarr; Link di acquisto)."
+
+#: app/templates/item_detail.html:61 app/templates/series.html:276
+msgid "Bookshop.org supports independent bookstores."
+msgstr "Bookshop.org sostiene le librerie indipendenti."
+
 #: app/templates/item_detail.html:76
 msgid "Type:"
 msgstr "Tipo:"
@@ -3285,6 +3321,7 @@ msgstr "Durata (min)"
 
 #: app/templates/fragments/account_menu.html:132
 #: app/templates/fragments/item_copy_edit.html:99
+#: app/templates/fragments/settings/buy_links.html:46
 #: app/templates/fragments/settings/discogs.html:22
 #: app/templates/fragments/settings/integrations.html:95
 #: app/templates/fragments/settings/integrations.html:160
@@ -5523,6 +5560,26 @@ msgstr[1] "%(num)s elementi sono nel cestino da più del periodo di conservazion
 #: app/templates/fragments/trash_nag.html:13
 msgid "Review expired items"
 msgstr "Rivedi gli elementi scaduti"
+
+#: app/templates/fragments/settings/buy_links.html:9
+msgid "These links pay you, through your own affiliate accounts. Shelf earns nothing. A Bookshop.org link without an ISBN is a plain search and pays nobody."
+msgstr "Questi link pagano te, tramite i tuoi account di affiliazione. Shelf non guadagna nulla. Un link a Bookshop.org senza ISBN è una semplice ricerca e non paga nessuno."
+
+#: app/templates/fragments/settings/buy_links.html:15
+msgid "Bookshop.org affiliate id (blank turns it off)"
+msgstr "ID di affiliazione Bookshop.org (vuoto lo disattiva)"
+
+#: app/templates/fragments/settings/buy_links.html:21
+msgid "Bookshop.org site"
+msgstr "Sito Bookshop.org"
+
+#: app/templates/fragments/settings/buy_links.html:30
+msgid "Amazon Associates tag (blank turns it off)"
+msgstr "Tag Amazon Associates (vuoto lo disattiva)"
+
+#: app/templates/fragments/settings/buy_links.html:36
+msgid "Amazon marketplace"
+msgstr "Marketplace Amazon"
 
 #: app/templates/fragments/settings/data.html:12
 msgid "Maintenance"
