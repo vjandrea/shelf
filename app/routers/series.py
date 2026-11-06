@@ -9,6 +9,7 @@ import logging
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import Response
 
+from app import i18n
 from app.auth import require_role
 from app.features import feature_enabled, require_feature
 from app.config import BOOK_MEDIA_TYPES
@@ -152,12 +153,12 @@ async def check_series(name: str = "", _=Depends(require_role("viewer")),
     """Compare a local series against Hardcover's full listing."""
     name = name.strip()
     if not name:
-        return {"ok": False, "message": "Series name required"}
+        return {"ok": False, "message": i18n.gettext("Series name required")}
 
     with get_db() as db:
         token = get_setting(db, "hardcover_token")
         if not token:
-            return {"ok": False, "message": "Hardcover integration not configured"}
+            return {"ok": False, "message": i18n.gettext("Hardcover integration not configured")}
         local = db.execute(
             "SELECT title, owned, hardcover_book_id, "
             f"{lists.WISHLISTED_SQL} AS wishlisted FROM items_live i "
@@ -167,7 +168,7 @@ async def check_series(name: str = "", _=Depends(require_role("viewer")),
 
     books = await hardcover.get_series_books(name, token)
     if books is None:
-        return {"ok": False, "message": "Series not found on Hardcover (or lookup failed)"}
+        return {"ok": False, "message": i18n.gettext("Series not found on Hardcover (or lookup failed)")}
 
     by_hc_id = {r["hardcover_book_id"]: r for r in local if r["hardcover_book_id"]}
     by_title = {r["title"].casefold().strip(): r for r in local}
@@ -310,7 +311,7 @@ async def set_series_description(name: str, description: str = Form(""),
     """
     name = name.strip()
     if not name:
-        return {"ok": False, "message": "Series name required"}
+        return {"ok": False, "message": i18n.gettext("Series name required")}
 
     description = (description or "").strip()
 
@@ -365,11 +366,11 @@ async def set_series_complete(name: str, complete: str = Form(...),
     """
     name = name.strip()
     if not name:
-        return {"ok": False, "message": "Series name required"}
+        return {"ok": False, "message": i18n.gettext("Series name required")}
 
     complete = (complete or "").strip()
     if complete not in ("0", "1"):
-        return {"ok": False, "message": "complete must be '0' or '1'"}
+        return {"ok": False, "message": i18n.gettext("complete must be '0' or '1'")}
     value = 1 if complete == "1" else None
 
     with get_db() as db:
@@ -378,7 +379,7 @@ async def set_series_complete(name: str, complete: str = Form(...),
             (name,),
         ).fetchone()["c"]
         if not count:
-            return {"ok": False, "message": "Series not found"}
+            return {"ok": False, "message": i18n.gettext("Series not found")}
 
         _upsert_series_complete(db, name, value)
 
@@ -433,7 +434,7 @@ async def set_series_watch(request: Request, name: str, watch: str = Form(...),
 
     watched = watch == "1"
     if is_htmx:
-        message = f"Watching {name}" if watched else f"Stopped watching {name}"
+        message = (i18n.gettext("Watching %(name)s") if watched else i18n.gettext("Stopped watching %(name)s")) % {"name": name}
         return Response(status_code=200, headers={
             "HX-Trigger": items_common._toast_header(message),
             "HX-Refresh": "true",
@@ -460,16 +461,16 @@ async def rename_series(name: str, new_name: str = Form(""),
     name = name.strip()
     new_name = (new_name or "").strip()
     if not name:
-        return {"ok": False, "message": "Series name required"}
+        return {"ok": False, "message": i18n.gettext("Series name required")}
     if not new_name:
-        return {"ok": False, "message": "New series name required"}
+        return {"ok": False, "message": i18n.gettext("New series name required")}
     if len(new_name) > MAX_SERIES_NAME:
         return {"ok": False,
-                "message": f"Series name too long (max {MAX_SERIES_NAME} chars)"}
+                "message": i18n.gettext("Series name too long (max %(max)s chars)") % {"max": MAX_SERIES_NAME}}
     # NOCASE is how every other series lookup matches, so a case-only edit is
     # a no-op at the database level rather than a rename.
     if name.casefold() == new_name.casefold():
-        return {"ok": False, "message": "That is already the series name"}
+        return {"ok": False, "message": i18n.gettext("That is already the series name")}
 
     with get_db() as db:
         count = db.execute(
@@ -477,7 +478,7 @@ async def rename_series(name: str, new_name: str = Form(""),
             (name,),
         ).fetchone()["c"]
         if not count:
-            return {"ok": False, "message": "Series not found"}
+            return {"ok": False, "message": i18n.gettext("Series not found")}
 
         # Both reads happen before the UPDATE, while the two names still
         # describe distinct sets of items.
@@ -556,7 +557,7 @@ async def remove_all_from_series(name: str, _=Depends(require_role("editor")),
     """
     name = name.strip()
     if not name:
-        return {"ok": False, "message": "Series name required"}
+        return {"ok": False, "message": i18n.gettext("Series name required")}
 
     with get_db() as db:
         cur = db.execute(
@@ -565,7 +566,7 @@ async def remove_all_from_series(name: str, _=Depends(require_role("editor")),
         )
         count = cur.rowcount
         if not count:
-            return {"ok": False, "message": "Series not found"}
+            return {"ok": False, "message": i18n.gettext("Series not found")}
 
         # Same connection, after the UPDATE — nothing references this name
         # any more, so its series_meta row (if any) is garbage, and so is its
@@ -587,12 +588,12 @@ async def fetch_series_description(name: str, _=Depends(require_role("editor")),
     """
     name = name.strip()
     if not name:
-        return {"ok": False, "message": "Series name required"}
+        return {"ok": False, "message": i18n.gettext("Series name required")}
 
     with get_db() as db:
         token = get_setting(db, "hardcover_token")
         if not token:
-            return {"ok": False, "message": "Hardcover integration not configured"}
+            return {"ok": False, "message": i18n.gettext("Hardcover integration not configured")}
 
     description = await hardcover.get_series_description(name, token)
     if not description:
@@ -600,7 +601,7 @@ async def fetch_series_description(name: str, _=Depends(require_role("editor")),
         # Flagged as `empty` so the UI can say so plainly instead of showing
         # an error, which reads as "the button is broken".
         return {"ok": False, "empty": True,
-                "message": "Hardcover has no synopsis for this series — add one below"}
+                "message": i18n.gettext("Hardcover has no synopsis for this series — add one below")}
 
     with get_db() as db:
         _upsert_series_description(db, name, description, "hardcover")
