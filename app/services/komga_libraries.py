@@ -18,6 +18,8 @@ from typing import Any
 
 import httpx
 
+from app import i18n
+
 
 LIBRARY_KINDS = frozenset({"comic", "manga"})
 
@@ -87,9 +89,9 @@ async def fetch_libraries(
     """Fetch Komga libraries and attach Shelf's comic/manga classification."""
     base_url = (komga_url or "").strip().rstrip("/")
     if not base_url:
-        raise KomgaError("Komga URL is required")
+        raise KomgaError(i18n.gettext("Komga URL is required"))
     if not (api_key or "").strip():
-        raise KomgaError("Komga API key is required")
+        raise KomgaError(i18n.gettext("Komga API key is required"))
 
     try:
         response = await client.get(
@@ -97,15 +99,15 @@ async def fetch_libraries(
             headers=_headers(api_key.strip()),
         )
     except (httpx.TimeoutException, httpx.TransportError) as exc:
-        raise KomgaError("Could not connect to Komga") from exc
+        raise KomgaError(i18n.gettext("Could not connect to Komga")) from exc
     if response.status_code != 200:
-        raise KomgaError(f"Komga returned HTTP {response.status_code}")
+        raise KomgaError(i18n.gettext("Komga returned HTTP %(code)s") % {"code": response.status_code})
     try:
         raw = response.json()
     except ValueError as exc:
-        raise KomgaError("Komga returned invalid JSON") from exc
+        raise KomgaError(i18n.gettext("Komga returned invalid JSON")) from exc
     if not isinstance(raw, list):
-        raise KomgaError("Komga returned an invalid library list")
+        raise KomgaError(i18n.gettext("Komga returned an invalid library list"))
 
     libraries: list[dict[str, Any]] = []
     mappings = configured or {}
@@ -133,8 +135,8 @@ def browser_book_url(komga_url: str, book_id: str, *, public_url: str | None = N
     """Build a browser-facing Komga book URL without mixing API/public roots."""
     base = (public_url or komga_url or "").strip().rstrip("/")
     if not base:
-        raise KomgaError("Komga browser URL is required")
+        raise KomgaError(i18n.gettext("Komga browser URL is required"))
     clean_id = (book_id or "").strip()
     if not clean_id:
-        raise KomgaError("Komga book ID is required")
+        raise KomgaError(i18n.gettext("Komga book ID is required"))
     return f"{base}/book/{clean_id}"

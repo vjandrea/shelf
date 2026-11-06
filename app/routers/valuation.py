@@ -245,7 +245,7 @@ async def valuate_all_stream(request: Request, _=Depends(require_role("admin")),
         except Exception:
             logger.exception("Valuation failed")
             isbndb._save_cache(cache)
-            await queue.put({"type": "error", "message": "Valuation failed — check server logs"})
+            await queue.put({"type": "error", "message": i18n.gettext("Valuation failed — check server logs")})
 
     async def event_stream():
         task = asyncio.create_task(run_valuate())

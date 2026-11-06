@@ -77,6 +77,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Any, Iterable, Mapping
 
+from app import i18n
 from app.config import MEDIA_TYPES, STATUS_MEDIA_TYPES, canonical_media_type
 from app.database import get_game_platforms
 from app.services import author_index
@@ -223,7 +224,7 @@ def validate_item_fields(db, fields: Mapping[str, Any]) -> dict[str, Any]:
         else:
             pair = isbn_svc.canonical_isbn_pair(str(raw))
             if pair is None:
-                raise InvalidIsbn(f"Invalid ISBN: {raw}", value=raw)
+                raise InvalidIsbn(i18n.gettext("Invalid ISBN: %(value)s") % {"value": raw}, value=raw)
             out["isbn"], out["isbn10"] = pair
 
     if "media_type" in out:
@@ -235,7 +236,7 @@ def validate_item_fields(db, fields: Mapping[str, Any]) -> dict[str, Any]:
         mt = canonical_media_type(out["media_type"])
         out["media_type"] = mt
         if mt not in MEDIA_TYPES:
-            raise UnknownMediaType(f"Unknown media type: {mt!r}", value=mt)
+            raise UnknownMediaType(i18n.gettext("Unknown media type: %(value)r") % {"value": mt}, value=mt)
 
     if "location_id" in out:
         loc = out["location_id"]
@@ -257,7 +258,7 @@ def validate_item_fields(db, fields: Mapping[str, Any]) -> dict[str, Any]:
         if isinstance(plat, str):
             plat = plat.strip() or None
         if plat is not None and plat not in get_game_platforms(db):
-            raise UnknownPlatform(f"Unknown game platform: {plat!r}", value=plat)
+            raise UnknownPlatform(i18n.gettext("Unknown game platform: %(value)r") % {"value": plat}, value=plat)
         out["platform"] = plat
 
     if "reading_status" in out:
@@ -292,7 +293,7 @@ def _coerce_owned(value: Any) -> int:
         return int(value.strip())
     if isinstance(value, int) and value in (0, 1):
         return value
-    raise InvalidOwned("Owned must be 0 or 1", value=value)
+    raise InvalidOwned(i18n.gettext("Owned must be 0 or 1"), value=value)
 
 
 def _pop_wishlisted(values: dict[str, Any]) -> bool | None:
@@ -310,7 +311,7 @@ def _pop_wishlisted(values: dict[str, Any]) -> bool | None:
         return value
     if isinstance(value, int) and value in (0, 1):
         return bool(value)
-    raise InvalidWishlisted("Wishlisted must be true or false", value=value)
+    raise InvalidWishlisted(i18n.gettext("Wishlisted must be true or false"), value=value)
 
 
 def _refuse_owned_wishlist(db, wishlisted: bool | None, values: Mapping[str, Any],
@@ -336,12 +337,12 @@ def _refuse_owned_wishlist(db, wishlisted: bool | None, values: Mapping[str, Any
 
     if "owned" in values:
         if _coerce_owned(values["owned"]) == 1:
-            raise InvalidWishlisted("An owned item cannot be on the wishlist")
+            raise InvalidWishlisted(i18n.gettext("An owned item cannot be on the wishlist"))
         return
 
     if item_ids is None:
         # Insert with no `owned` key: the column default applies, and it is 1.
-        raise InvalidWishlisted("An owned item cannot be on the wishlist")
+        raise InvalidWishlisted(i18n.gettext("An owned item cannot be on the wishlist"))
 
     ids = list(item_ids)
     if not ids:
@@ -350,7 +351,7 @@ def _refuse_owned_wishlist(db, wishlisted: bool | None, values: Mapping[str, Any
     if db.execute(
         f"SELECT 1 FROM items_live WHERE id IN ({marks}) AND owned = 1", ids
     ).fetchone():
-        raise InvalidWishlisted("An owned item cannot be on the wishlist")
+        raise InvalidWishlisted(i18n.gettext("An owned item cannot be on the wishlist"))
 
 
 def _apply_membership(db, item_ids: Iterable[int], wishlisted: bool | None,
@@ -583,9 +584,10 @@ def insert_item(db, fields: Mapping[str, Any] | None = None, *,
         row, field = hit
         if not restore_trashed:
             raise IdentifierInTrash(
-                f"“{row['title']}” is in Trash and already uses this "
-                f"{field.upper()}. Restore it from Trash, or delete it "
-                "permanently, before adding this item.",
+                i18n.gettext(
+                    "“%(title)s” is in Trash and already uses this %(field)s. Restore it "
+                    "from Trash, or delete it permanently, before adding this item."
+                ) % {"title": row["title"], "field": field.upper()},
                 value=values.get(field),
                 field=field,
                 item_id=row["id"],
@@ -747,9 +749,10 @@ def refuse_trash_collision(db, where: str, where_params: list[Any],
             ).fetchone()
             if hit is not None:
                 raise IdentifierInTrash(
-                    f"“{hit['title']}” is in Trash and already uses this ISBN. "
-                    "Restore it from Trash, or delete it permanently, before "
-                    "using this ISBN here.",
+                    i18n.gettext(
+                        "“%(title)s” is in Trash and already uses this ISBN. Restore it "
+                        "from Trash, or delete it permanently, before using this ISBN here."
+                    ) % {"title": hit["title"]},
                     value=isbn, field="isbn",
                     item_id=hit["id"], title=hit["title"],
                 )
@@ -762,9 +765,10 @@ def refuse_trash_collision(db, where: str, where_params: list[Any],
             ).fetchone()
             if hit is not None:
                 raise IdentifierInTrash(
-                    f"“{hit['title']}” is in Trash and already uses this UPC. "
-                    "Restore it from Trash, or delete it permanently, before "
-                    "using this UPC here.",
+                    i18n.gettext(
+                        "“%(title)s” is in Trash and already uses this UPC. Restore it "
+                        "from Trash, or delete it permanently, before using this UPC here."
+                    ) % {"title": hit["title"]},
                     value=upc, field="upc",
                     item_id=hit["id"], title=hit["title"],
                 )

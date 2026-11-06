@@ -22,7 +22,7 @@
         link.href = data.url;
         link.target = '_blank';
         link.rel = 'noopener';
-        link.textContent = 'Open in RomM';
+        link.textContent = t('Open in RomM');
         link.className = 'inline-flex items-center px-3 py-1.5 bg-shelf-accent/20 text-shelf-accent2 rounded-lg text-sm hover:bg-shelf-accent/30 transition-colors';
         wrapper.appendChild(link);
 

@@ -13,6 +13,7 @@ from typing import Any
 
 import httpx
 
+from app import i18n
 from app.services.komga_libraries import KomgaError, _headers
 
 PAGE_SIZE = 200
@@ -123,11 +124,11 @@ async def fetch_library_books(
     clean_key = (api_key or "").strip()
     clean_library = (library_id or "").strip()
     if not base_url:
-        raise KomgaError("Komga URL is required")
+        raise KomgaError(i18n.gettext("Komga URL is required"))
     if not clean_key:
-        raise KomgaError("Komga API key is required")
+        raise KomgaError(i18n.gettext("Komga API key is required"))
     if not clean_library:
-        raise KomgaError("Komga library ID is required")
+        raise KomgaError(i18n.gettext("Komga library ID is required"))
 
     body = {
         "condition": {
@@ -150,18 +151,18 @@ async def fetch_library_books(
                 json=body,
             )
         except (httpx.TimeoutException, httpx.TransportError) as exc:
-            raise KomgaError("Could not fetch Komga books") from exc
+            raise KomgaError(i18n.gettext("Could not fetch Komga books")) from exc
         if response.status_code != 200:
-            raise KomgaError(f"Komga returned HTTP {response.status_code} while fetching books")
+            raise KomgaError(i18n.gettext("Komga returned HTTP %(code)s while fetching books") % {"code": response.status_code})
         try:
             data = response.json()
         except ValueError as exc:
-            raise KomgaError("Komga returned invalid book JSON") from exc
+            raise KomgaError(i18n.gettext("Komga returned invalid book JSON")) from exc
         if not isinstance(data, dict):
-            raise KomgaError("Komga returned an invalid book page")
+            raise KomgaError(i18n.gettext("Komga returned an invalid book page"))
         content = data.get("content") or []
         if not isinstance(content, list):
-            raise KomgaError("Komga returned an invalid book list")
+            raise KomgaError(i18n.gettext("Komga returned an invalid book list"))
 
         added = 0
         for book in content:
