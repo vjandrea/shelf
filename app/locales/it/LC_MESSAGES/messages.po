@@ -1604,7 +1604,7 @@ msgstr "Manuale"
 
 #: app/services/browse_counts.py:31
 msgid "Audible import"
-msgstr ""
+msgstr "Importazione Audible"
 
 #: app/services/browse_counts.py:33
 msgid "Store Queue"
@@ -5730,6 +5730,14 @@ msgstr ", saltati:"
 #: app/templates/fragments/settings/data.html:204
 msgid ", Restored:"
 msgstr ", ripristinati:"
+
+#: app/templates/fragments/settings/data.html:207
+msgid ", Matched to"
+msgstr ", abbinati a"
+
+#: app/templates/fragments/settings/data.html:207
+msgid "existing audiobooks"
+msgstr "audiolibri esistenti"
 
 #: app/templates/fragments/settings/data.html:210
 msgid ", To Trash:"
