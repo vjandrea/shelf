@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: andrea@bergamasco.me\n"
-"PO-Revision-Date: 2026-11-15 19:58+0100\n"
+"PO-Revision-Date: 2026-11-15 21:39+0100\n"
 "Last-Translator: Andrea Bergamasco\n"
 "Language: it\n"
 "Language-Team: Italian\n"
@@ -953,36 +953,36 @@ msgstr "Impossibile recuperare i dati per questo ISBN"
 
 #: app/routers/items_catalog.py:551
 msgid "This item has no ASIN to look up."
-msgstr ""
+msgstr "Questo elemento non ha un ASIN da cercare."
 
 #: app/routers/items_catalog.py:559
 #, python-format
 msgid "Not in the Audible catalogue for the %(region)s marketplace. Check Settings → Library → Audible marketplace."
-msgstr ""
+msgstr "Non è nel catalogo Audible del marketplace %(region)s. Controlla Impostazioni → Biblioteca → Audible marketplace."
 
 #: app/routers/items_catalog.py:564
 msgid "The Audible catalogue is rate-limiting requests. Try again in a minute."
-msgstr ""
+msgstr "Il catalogo Audible sta limitando le richieste. Riprova tra un minuto."
 
 #: app/routers/items_catalog.py:567
 msgid "Could not reach the Audible catalogue (Audnexus)."
-msgstr ""
+msgstr "Impossibile raggiungere il catalogo Audible (Audnexus)."
 
 #: app/routers/items_catalog.py:572
 msgid "Nothing to fill — every detail Audible has is already set."
-msgstr ""
+msgstr "Niente da compilare: tutti i dettagli che Audible conosce sono già impostati."
 
 #: app/routers/items_catalog.py:578
 #, python-format
 msgid "Audible's details could not be saved: %(error)s"
-msgstr ""
+msgstr "Impossibile salvare i dettagli di Audible: %(error)s"
 
 #: app/routers/items_catalog.py:580
 #, python-format
 msgid "Filled %(count)s field from Audible: %(fields)s."
 msgid_plural "Filled %(count)s fields from Audible: %(fields)s."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Compilato %(count)s campo da Audible: %(fields)s."
+msgstr[1] "Compilati %(count)s campi da Audible: %(fields)s."
 
 #: app/routers/items_common.py:408
 msgid "Metadata lookup failed — check connectivity"
@@ -1636,43 +1636,43 @@ msgstr "Questo inventario riguarda %(place)s: torna a quella posizione, oppure c
 
 #: app/services/audnexus.py:52
 msgid "Australia"
-msgstr ""
+msgstr "Australia"
 
 #: app/services/audnexus.py:53
 msgid "Canada"
-msgstr ""
+msgstr "Canada"
 
 #: app/services/audnexus.py:54
 msgid "Germany"
-msgstr ""
+msgstr "Germania"
 
 #: app/services/audnexus.py:55
 msgid "Spain"
-msgstr ""
+msgstr "Spagna"
 
 #: app/services/audnexus.py:56
 msgid "France"
-msgstr ""
+msgstr "Francia"
 
 #: app/services/audnexus.py:57
 msgid "India"
-msgstr ""
+msgstr "India"
 
 #: app/services/audnexus.py:58
 msgid "Italy"
-msgstr ""
+msgstr "Italia"
 
 #: app/services/audnexus.py:59
 msgid "Japan"
-msgstr ""
+msgstr "Giappone"
 
 #: app/services/audnexus.py:60
 msgid "United Kingdom"
-msgstr ""
+msgstr "Regno Unito"
 
 #: app/services/audnexus.py:61
 msgid "United States"
-msgstr ""
+msgstr "Stati Uniti"
 
 #: app/services/audnexus.py:204 app/templates/item_edit.html:104
 msgid "Subtitle"
@@ -1680,7 +1680,7 @@ msgstr "Sottotitolo"
 
 #: app/services/audnexus.py:205
 msgid "Authors"
-msgstr ""
+msgstr "Autori"
 
 #: app/services/audnexus.py:206 app/templates/item_edit.html:366
 msgid "Narrator"
@@ -1688,7 +1688,7 @@ msgstr "Voce narrante"
 
 #: app/services/audnexus.py:209
 msgid "Duration"
-msgstr ""
+msgstr "Durata"
 
 #: app/services/audnexus.py:210 app/templates/item_detail.html:126
 msgid "Synopsis"
@@ -1696,7 +1696,7 @@ msgstr "Sinossi"
 
 #: app/services/audnexus.py:212
 msgid "Series number"
-msgstr ""
+msgstr "Numero nella serie"
 
 #: app/services/browse_counts.py:16
 msgid "Manual"
@@ -2925,7 +2925,7 @@ msgstr "Riprova con ISBN"
 
 #: app/templates/item_detail.html:38
 msgid "Retry ASIN"
-msgstr ""
+msgstr "Riprova con ASIN"
 
 #: app/templates/item_detail.html:49
 msgid "Find cover"
@@ -3042,7 +3042,7 @@ msgstr "Nessuna sinossi trovata su Open Library o Google Books."
 
 #: app/templates/item_detail.html:155
 msgid "Fill details from Audible"
-msgstr ""
+msgstr "Compila i dettagli da Audible"
 
 #: app/templates/item_detail.html:167
 msgid "Loading related media…"
@@ -4729,7 +4729,7 @@ msgstr "%(n)s scansionati"
 
 #: app/templates/fragments/audnexus_fill_result.html:1
 msgid "Reload to see them"
-msgstr ""
+msgstr "Ricarica per vederli"
 
 #: app/templates/fragments/book_search_results.html:43
 #, python-format
@@ -4811,7 +4811,7 @@ msgstr "Non riuscito"
 
 #: app/templates/fragments/cover_search.html:80
 msgid "Type in the search box to look for covers."
-msgstr ""
+msgstr "Scrivi nella casella di ricerca per cercare copertine."
 
 #: app/templates/fragments/cover_search.html:82
 msgid "No covers found for this title."
