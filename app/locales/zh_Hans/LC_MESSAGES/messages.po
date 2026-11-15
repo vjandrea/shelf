@@ -381,6 +381,14 @@ msgstr ""
 msgid "Watch wishlist list prices nightly and send a drop digest."
 msgstr ""
 
+#: app/features.py:223 app/templates/fragments/settings/buy_links.html:7
+msgid "Buy links"
+msgstr ""
+
+#: app/features.py:224
+msgid "Bookshop.org and Amazon links on wishlisted books and missing series volumes, carrying your own affiliate tags."
+msgstr ""
+
 #: app/features.py:230 app/nav.py:42 app/templates/music.html:2
 #: app/templates/music.html:8 app/templates/music_item.html:2
 msgid "Music"
@@ -606,11 +614,30 @@ msgstr "已有 %(max)s 个令牌，请先撤销一个"
 msgid "Token not found"
 msgstr "找不到该令牌"
 
+#: app/routers/archive.py:96 app/routers/archive.py:135
+#: app/routers/archive.py:184
+msgid "Invalid import mode"
+msgstr ""
+
+#: app/routers/archive.py:101 app/routers/archive.py:139
+#: app/routers/items_csv.py:111 app/routers/settings.py:490
+msgid "No file uploaded"
+msgstr ""
+
+#: app/routers/archive.py:198
+msgid "This plan was reviewed under a different mode — preview it again."
+msgstr ""
+
+#: app/routers/audits.py:286
+msgid "Audit not found"
+msgstr ""
+
 #: app/routers/auth_routes.py:56 app/routers/auth_routes.py:63
 msgid "Invalid username or password"
 msgstr "用户名或密码错误"
 
-#: app/routers/auth_routes.py:121
+#: app/routers/auth_routes.py:121 app/routers/auth_routes.py:180
+#: app/routers/auth_routes.py:238
 msgid "Password must be at least 8 characters"
 msgstr "密码至少需要 8 个字符"
 
@@ -619,13 +646,43 @@ msgstr "密码至少需要 8 个字符"
 msgid "Passwords do not match"
 msgstr "两次输入的密码不一致"
 
-#: app/routers/auth_routes.py:125
+#: app/routers/auth_routes.py:125 app/routers/auth_routes.py:182
 msgid "Username must be at least 2 characters"
 msgstr "用户名至少需要 2 个字符"
 
 #: app/routers/auth_routes.py:127
 msgid "Choose how much of Shelf to start with"
 msgstr "请选择 Shelf 的初始功能档位"
+
+#: app/routers/auth_routes.py:178 app/routers/auth_routes.py:207
+msgid "Invalid role"
+msgstr ""
+
+#: app/routers/auth_routes.py:193
+msgid "Username already exists"
+msgstr ""
+
+#: app/routers/auth_routes.py:196
+#, python-format
+msgid "User '%(name)s' created"
+msgstr ""
+
+#: app/routers/auth_routes.py:213 app/routers/auth_routes.py:244
+#: app/routers/auth_routes.py:348
+msgid "User not found"
+msgstr ""
+
+#: app/routers/auth_routes.py:219
+msgid "Cannot demote the last admin"
+msgstr ""
+
+#: app/routers/auth_routes.py:227
+msgid "Role updated — user's sessions have been invalidated"
+msgstr ""
+
+#: app/routers/auth_routes.py:251
+msgid "Password updated — user's sessions have been invalidated"
+msgstr ""
 
 #: app/routers/auth_routes.py:264
 msgid "New password must be at least 8 characters"
@@ -651,15 +708,30 @@ msgstr "显示名称已更新"
 msgid "Unknown language"
 msgstr "未知语言"
 
+#: app/routers/auth_routes.py:343
+msgid "Cannot delete your own account"
+msgstr ""
+
+#: app/routers/auth_routes.py:353
+msgid "Cannot delete the last admin"
+msgstr ""
+
+#: app/routers/auth_routes.py:364
+msgid "User deleted"
+msgstr ""
+
 #: app/routers/checkouts.py:126
 msgid "Due date is out of range"
 msgstr ""
 
 #: app/routers/checkouts.py:137 app/routers/hardcover.py:250
 #: app/routers/item_copies.py:174 app/routers/item_copies.py:231
-#: app/routers/items_catalog.py:542 app/routers/related_media.py:44
-#: app/routers/related_media.py:80 app/routers/related_media.py:103
-#: app/routers/related_media.py:120
+#: app/routers/items.py:1402 app/routers/items_catalog.py:542
+#: app/routers/related_media.py:44 app/routers/related_media.py:80
+#: app/routers/related_media.py:103 app/routers/related_media.py:120
+#: app/routers/tags.py:120 app/routers/tags.py:136
+#: app/services/item_copies.py:324 app/services/item_copies.py:414
+#: app/services/periodical_records.py:96
 msgid "Item not found"
 msgstr ""
 
@@ -673,6 +745,16 @@ msgstr ""
 
 #: app/routers/checkouts.py:170 app/routers/checkouts.py:179
 msgid "Checkout already checked in"
+msgstr ""
+
+#: app/routers/cover_review.py:254 app/routers/cover_review_actions.py:66
+#: app/routers/cover_review_actions.py:125
+#: app/routers/cover_review_actions.py:184 app/routers/items.py:898
+#: app/routers/items.py:1210 app/routers/items.py:1308
+#: app/routers/items_covers.py:177 app/routers/items_covers.py:238
+#: app/routers/items_covers.py:276 app/routers/items_covers.py:311
+#: app/routers/items_covers.py:363 app/routers/share.py:36
+msgid "Not found"
 msgstr ""
 
 #: app/routers/hardcover.py:46
@@ -809,7 +891,8 @@ msgstr ""
 msgid "No items or updates specified"
 msgstr "未指定条目或更新内容"
 
-#: app/routers/items.py:1000 app/routers/tags.py:71 app/routers/tags.py:76
+#: app/routers/items.py:1000 app/routers/items.py:1060 app/routers/tags.py:71
+#: app/routers/tags.py:76
 msgid "Invalid item IDs"
 msgstr "无效的条目 ID"
 
@@ -841,6 +924,18 @@ msgstr ""
 #: app/routers/items.py:1123
 #, python-format
 msgid "Cannot merge \"%(title)s\" (#%(id)s): %(reason)s"
+msgstr ""
+
+#: app/routers/items.py:1416
+msgid "No synopsis found"
+msgstr ""
+
+#: app/routers/items.py:1472
+msgid "Synopsis backfill failed — check server logs"
+msgstr ""
+
+#: app/routers/items.py:1535
+msgid "Both Client ID and Client Secret are required"
 msgstr ""
 
 #: app/routers/items_catalog.py:92
@@ -904,13 +999,13 @@ msgstr ""
 msgid "No cover found"
 msgstr ""
 
+#: app/routers/items_covers.py:471
+msgid "Cover retry failed — check server logs"
+msgstr ""
+
 #: app/routers/items_csv.py:102
 #, python-format
 msgid "Unknown import mode '%(mode)s' (use skip or update)"
-msgstr ""
-
-#: app/routers/items_csv.py:111 app/routers/settings.py:490
-msgid "No file uploaded"
 msgstr ""
 
 #: app/routers/items_csv.py:115
@@ -1021,7 +1116,7 @@ msgstr ""
 msgid "Komga settings saved"
 msgstr ""
 
-#: app/routers/komga.py:79
+#: app/routers/komga.py:79 app/services/komga_libraries.py:102
 msgid "Could not connect to Komga"
 msgstr ""
 
@@ -1038,11 +1133,20 @@ msgstr ""
 msgid "Komga sync failed — check server logs"
 msgstr ""
 
+#: app/routers/labels.py:45
+msgid "Unknown scope"
+msgstr ""
+
+#: app/routers/labels.py:97
+msgid "Choose a location"
+msgstr ""
+
 #: app/routers/location_order.py:66
 msgid "Invalid copy order"
 msgstr ""
 
 #: app/routers/location_order.py:69 app/routers/location_order.py:92
+#: app/services/item_copies.py:309 app/services/locations.py:46
 msgid "Location not found"
 msgstr ""
 
@@ -1083,8 +1187,16 @@ msgstr ""
 msgid "Discogs did not return a concrete release"
 msgstr ""
 
+#: app/routers/periodicals.py:107
+msgid "Not a valid periodical barcode"
+msgstr ""
+
 #: app/routers/periodicals.py:120
 msgid "This periodical issue is already in the collection"
+msgstr ""
+
+#: app/routers/periodicals.py:261
+msgid "A valid periodical barcode and publication title are required"
 msgstr ""
 
 #: app/routers/related_media.py:99
@@ -1099,7 +1211,7 @@ msgstr ""
 msgid "RomM settings saved"
 msgstr ""
 
-#: app/routers/romm.py:79
+#: app/routers/romm.py:79 app/services/romm_client.py:145
 msgid "Could not connect to RomM"
 msgstr ""
 
@@ -1246,6 +1358,22 @@ msgstr ""
 msgid "Books per night must be a whole number from 1 to %(max)s"
 msgstr ""
 
+#: app/routers/settings.py:266
+msgid "Bookshop.org affiliate id is digits only, up to 12"
+msgstr ""
+
+#: app/routers/settings.py:268
+msgid "Amazon tag may use letters, digits and hyphens, up to 40 characters"
+msgstr ""
+
+#: app/routers/settings.py:270
+msgid "Unknown Bookshop.org site"
+msgstr ""
+
+#: app/routers/settings.py:272
+msgid "Unknown Amazon marketplace"
+msgstr ""
+
 #: app/routers/settings.py:298
 #, python-format
 msgid "Series per day must be a whole number from 1 to %(max)s"
@@ -1305,10 +1433,6 @@ msgstr ""
 msgid "Database restored. All sessions invalidated. Restart the container to apply."
 msgstr ""
 
-#: app/routers/share.py:36
-msgid "Not found"
-msgstr ""
-
 #: app/routers/share.py:71
 msgid "Invalid share scope"
 msgstr ""
@@ -1327,6 +1451,10 @@ msgstr ""
 
 #: app/routers/shelf_fill.py:266
 msgid "Enter or scan a barcode"
+msgstr ""
+
+#: app/routers/store.py:160
+msgid "Invalid JSON body"
 msgstr ""
 
 #: app/routers/sync.py:40 app/routers/sync.py:46 app/routers/sync.py:117
@@ -1396,6 +1524,14 @@ msgstr "已为 %(count)s 个条目添加标签 %(tags)s"
 msgid "Removed %(tags)s from %(count)s item(s)"
 msgstr "已从 %(count)s 个条目移除标签 %(tags)s"
 
+#: app/routers/tags.py:110
+msgid "Tag name required"
+msgstr ""
+
+#: app/routers/tags.py:140
+msgid "Tag not found on item"
+msgstr ""
+
 #: app/routers/trash.py:113
 msgid "That item no longer exists"
 msgstr ""
@@ -1422,6 +1558,56 @@ msgstr ""
 
 #: app/routers/valuation.py:128
 msgid "No price found"
+msgstr ""
+
+#: app/routers/valuation.py:247
+msgid "Valuation failed — check server logs"
+msgstr ""
+
+#: app/services/archive.py:651
+msgid "The uploaded file could not be read."
+msgstr ""
+
+#: app/services/archive.py:653
+msgid "Archive is too large (max 500 MB)."
+msgstr ""
+
+#: app/services/archive.py:658
+msgid "That file is not a zip archive."
+msgstr ""
+
+#: app/services/archive.py:696
+#, python-format
+msgid "Archive contains an %(reason)s — refusing to read it."
+msgstr ""
+
+#: app/services/archive.py:698
+msgid "Archive contains a directory entry — refusing to read it."
+msgstr ""
+
+#: app/services/archive.py:702
+msgid "Archive contains a symlink — refusing to read it."
+msgstr ""
+
+#: app/services/archive.py:704
+msgid "Archive contains duplicate entries — refusing to read it."
+msgstr ""
+
+#: app/services/archive.py:711 app/services/archive.py:745
+msgid "Archive is too large when uncompressed."
+msgstr ""
+
+#: app/services/archive.py:720
+#, python-brace-format
+msgid "That zip is not a Shelf archive (no {} inside)."
+msgstr ""
+
+#: app/services/archive.py:726
+msgid "That zip is not a Shelf portable archive."
+msgstr ""
+
+#: app/services/archive.py:729
+msgid "Archive has an unrecognized format version."
 msgstr ""
 
 #: app/services/audits.py:68
@@ -1530,6 +1716,169 @@ msgstr "书店模式队列"
 msgid "CSV Import"
 msgstr "CSV 导入"
 
+#: app/services/discogs_selection.py:25 app/services/discogs_selection.py:27
+msgid "Discogs release id must be a positive integer"
+msgstr ""
+
+#: app/services/discogs_selection.py:62
+msgid "Discogs selection requires an existing music release"
+msgstr ""
+
+#: app/services/item_write.py:227
+#, python-format
+msgid "Invalid ISBN: %(value)s"
+msgstr ""
+
+#: app/services/item_write.py:239
+#, python-format
+msgid "Unknown media type: %(value)r"
+msgstr ""
+
+#: app/services/item_write.py:261
+#, python-format
+msgid "Unknown game platform: %(value)r"
+msgstr ""
+
+#: app/services/item_write.py:296
+msgid "Owned must be 0 or 1"
+msgstr ""
+
+#: app/services/item_write.py:314
+msgid "Wishlisted must be true or false"
+msgstr ""
+
+#: app/services/item_write.py:340 app/services/item_write.py:345
+#: app/services/item_write.py:354
+msgid "An owned item cannot be on the wishlist"
+msgstr ""
+
+#: app/services/item_write.py:588
+#, python-format
+msgid "“%(title)s” is in Trash and already uses this %(field)s. Restore it from Trash, or delete it permanently, before adding this item."
+msgstr ""
+
+#: app/services/item_write.py:753
+#, python-format
+msgid "“%(title)s” is in Trash and already uses this ISBN. Restore it from Trash, or delete it permanently, before using this ISBN here."
+msgstr ""
+
+#: app/services/item_write.py:769
+#, python-format
+msgid "“%(title)s” is in Trash and already uses this UPC. Restore it from Trash, or delete it permanently, before using this UPC here."
+msgstr ""
+
+#: app/services/komga_books.py:127 app/services/komga_libraries.py:92
+msgid "Komga URL is required"
+msgstr ""
+
+#: app/services/komga_books.py:129 app/services/komga_libraries.py:94
+msgid "Komga API key is required"
+msgstr ""
+
+#: app/services/komga_books.py:131
+msgid "Komga library ID is required"
+msgstr ""
+
+#: app/services/komga_books.py:154
+msgid "Could not fetch Komga books"
+msgstr ""
+
+#: app/services/komga_books.py:156
+#, python-format
+msgid "Komga returned HTTP %(code)s while fetching books"
+msgstr ""
+
+#: app/services/komga_books.py:160
+msgid "Komga returned invalid book JSON"
+msgstr ""
+
+#: app/services/komga_books.py:162
+msgid "Komga returned an invalid book page"
+msgstr ""
+
+#: app/services/komga_books.py:165
+msgid "Komga returned an invalid book list"
+msgstr ""
+
+#: app/services/komga_libraries.py:104
+#, python-format
+msgid "Komga returned HTTP %(code)s"
+msgstr ""
+
+#: app/services/komga_libraries.py:108
+msgid "Komga returned invalid JSON"
+msgstr ""
+
+#: app/services/komga_libraries.py:110
+msgid "Komga returned an invalid library list"
+msgstr ""
+
+#: app/services/komga_libraries.py:138
+msgid "Komga browser URL is required"
+msgstr ""
+
+#: app/services/komga_libraries.py:141
+msgid "Komga book ID is required"
+msgstr ""
+
+#: app/services/komga_records.py:49
+msgid "Komga library must be classified as Comic or Manga"
+msgstr ""
+
+#: app/services/komga_records.py:121
+msgid "Shelf item not found"
+msgstr ""
+
+#: app/services/komga_records.py:153
+msgid "This Komga holding is attached to a manually catalogued item; change its Comic/Manga type explicitly in Shelf before re-syncing"
+msgstr ""
+
+#: app/services/komga_records.py:162
+msgid "Changing this Komga library between Comic and Manga would collide with an existing Shelf edition"
+msgstr ""
+
+#: app/services/komga_records.py:193
+msgid "Komga candidate is missing id, library or title"
+msgstr ""
+
+#: app/services/komga_records.py:213
+msgid "Refreshing this Komga holding would give it an ISBN an item in Trash already holds"
+msgstr ""
+
+#: app/services/location_order.py:84
+msgid "Copy order must contain every copy in this location exactly once"
+msgstr ""
+
+#: app/services/location_order.py:140
+msgid "Unknown sort order"
+msgstr ""
+
+#: app/services/locations.py:79
+msgid "A location cannot be its own parent"
+msgstr ""
+
+#: app/services/locations.py:90
+msgid "A location cannot be moved inside itself"
+msgstr ""
+
+#: app/services/locations.py:98 app/services/locations.py:138
+#: app/services/locations.py:169
+msgid "Location name cannot be blank"
+msgstr ""
+
+#: app/services/locations.py:102 app/services/locations.py:111
+#: app/services/locations.py:175 app/services/locations.py:185
+msgid "A location with that name already exists here"
+msgstr ""
+
+#: app/services/locations.py:194
+msgid "Move or remove child locations first"
+msgstr ""
+
+#: app/services/media_groups.py:32
+msgid "Unknown related-media link type"
+msgstr ""
+
 #: app/services/national.py:89
 msgid "English"
 msgstr "英语"
@@ -1593,6 +1942,145 @@ msgstr "中文"
 #: app/services/national.py:104
 msgid "Korean"
 msgstr "韩语"
+
+#: app/services/periodical_records.py:61
+msgid "Periodical title is required"
+msgstr ""
+
+#: app/services/periodical_records.py:100
+msgid "Publication not found"
+msgstr ""
+
+#: app/services/periodical_scan.py:78
+msgid "Periodical publication title is required"
+msgstr ""
+
+#: app/services/romm_client.py:71
+msgid "RomM URL must be an HTTP or HTTPS URL"
+msgstr ""
+
+#: app/services/romm_client.py:73
+msgid "RomM URL is invalid"
+msgstr ""
+
+#: app/services/romm_client.py:80
+msgid "RomM API token is required"
+msgstr ""
+
+#: app/services/romm_client.py:109
+msgid "RomM platform has no usable identity"
+msgstr ""
+
+#: app/services/romm_client.py:151
+msgid "RomM returned invalid JSON"
+msgstr ""
+
+#: app/services/romm_client.py:153
+msgid "RomM returned an invalid platform list"
+msgstr ""
+
+#: app/services/romm_client.py:247
+msgid "RomM ROM listing remained unavailable"
+msgstr ""
+
+#: app/services/romm_client.py:260
+msgid "RomM ROM listing failed"
+msgstr ""
+
+#: app/services/romm_client.py:264
+msgid "RomM returned invalid ROM JSON"
+msgstr ""
+
+#: app/services/romm_client.py:273 app/services/romm_client.py:275
+msgid "RomM returned an invalid ROM page"
+msgstr ""
+
+#: app/services/romm_client.py:295
+msgid "RomM platform has no id"
+msgstr ""
+
+#: app/services/romm_client.py:324
+msgid "RomM pagination made no progress"
+msgstr ""
+
+#: app/services/romm_client.py:337
+msgid "RomM ROM id is required"
+msgstr ""
+
+#: app/services/tags.py:155
+#, python-format
+msgid "%(n)s selected item(s) no longer exist"
+msgstr ""
+
+#: app/services/vision.py:298
+msgid "No vision provider configured — set one up in Settings → Integrations"
+msgstr ""
+
+#: app/services/vision.py:310
+msgid "Anthropic API key is not configured"
+msgstr ""
+
+#: app/services/vision.py:337
+msgid "Anthropic API key was rejected — check it in Settings"
+msgstr ""
+
+#: app/services/vision.py:343
+#, python-format
+msgid "Anthropic rejected the request (HTTP %(code)s): %(detail)s"
+msgstr ""
+
+#: app/services/vision.py:344
+#, python-format
+msgid "Anthropic API error (HTTP %(code)s) — try again"
+msgstr ""
+
+#: app/services/vision.py:346
+msgid "Could not reach the Anthropic API — check your connection"
+msgstr ""
+
+#: app/services/vision.py:351
+msgid "The model declined to process this image"
+msgstr ""
+
+#: app/services/vision.py:357 app/services/vision.py:421
+msgid "The model returned an unreadable response — try again"
+msgstr ""
+
+#: app/services/vision.py:371
+msgid "OpenAI API key is not configured"
+msgstr ""
+
+#: app/services/vision.py:397
+#, python-format
+msgid "Could not reach the OpenAI API at %(url)s"
+msgstr ""
+
+#: app/services/vision.py:399
+msgid "OpenAI API key was rejected — check it in Settings"
+msgstr ""
+
+#: app/services/vision.py:416
+msgid "The OpenAI API returned an unexpected response — try again"
+msgstr ""
+
+#: app/services/vision.py:442
+#, python-format
+msgid "Could not reach Ollama at %(url)s"
+msgstr ""
+
+#: app/services/vision.py:444
+#, python-format
+msgid "Ollama model %(quoted)s not found — pull it with: ollama pull %(model)s"
+msgstr ""
+
+#: app/services/vision.py:447
+#, python-format
+msgid "Ollama error (HTTP %(code)s)"
+msgstr ""
+
+#: app/services/vision.py:454
+msgid "The model returned an unreadable response — try a different model"
+msgstr ""
 
 #: app/services/wrapups.py:35
 msgid "January"
@@ -2458,6 +2946,18 @@ msgstr ""
 msgid "was %(price)s on %(date)s"
 msgstr ""
 
+#: app/templates/item_detail.html:61
+msgid "Buy:"
+msgstr ""
+
+#: app/templates/item_detail.html:62 app/templates/series.html:275
+msgid "Affiliate links carrying your own tags (Settings &rarr; Library &rarr; Buy links)."
+msgstr ""
+
+#: app/templates/item_detail.html:62 app/templates/series.html:276
+msgid "Bookshop.org supports independent bookstores."
+msgstr ""
+
 #: app/templates/item_detail.html:77
 msgid "Type:"
 msgstr ""
@@ -2913,6 +3413,7 @@ msgstr ""
 
 #: app/templates/fragments/account_menu.html:132
 #: app/templates/fragments/item_copy_edit.html:99
+#: app/templates/fragments/settings/buy_links.html:46
 #: app/templates/fragments/settings/discogs.html:22
 #: app/templates/fragments/settings/integrations.html:95
 #: app/templates/fragments/settings/integrations.html:160
@@ -4520,8 +5021,19 @@ msgid "Print these labels"
 msgstr ""
 
 #: app/templates/fragments/labels_assigned.html:6
+#: app/templates/fragments/labels_count.html:1
 msgid "Nothing to assign &mdash; every copy here has a barcode."
 msgstr ""
+
+#: app/templates/fragments/labels_count.html:1
+msgid "Choose a location."
+msgstr ""
+
+#: app/templates/fragments/labels_count.html:1
+#, python-format
+msgid "%(num)s copy would get a code."
+msgid_plural "%(num)s copies would get a code."
+msgstr[0] ""
 
 #: app/templates/fragments/labels_scope.html:5
 msgid "Which copies"
@@ -5142,6 +5654,26 @@ msgstr[0] ""
 msgid "Review expired items"
 msgstr ""
 
+#: app/templates/fragments/settings/buy_links.html:9
+msgid "These links pay you, through your own affiliate accounts. Shelf earns nothing. A Bookshop.org link without an ISBN is a plain search and pays nobody."
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:15
+msgid "Bookshop.org affiliate id (blank turns it off)"
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:21
+msgid "Bookshop.org site"
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:30
+msgid "Amazon Associates tag (blank turns it off)"
+msgstr ""
+
+#: app/templates/fragments/settings/buy_links.html:36
+msgid "Amazon marketplace"
+msgstr ""
+
 #: app/templates/fragments/settings/data.html:12
 msgid "Maintenance"
 msgstr ""
@@ -5288,6 +5820,14 @@ msgstr ""
 
 #: app/templates/fragments/settings/data.html:204
 msgid ", Restored:"
+msgstr ""
+
+#: app/templates/fragments/settings/data.html:207
+msgid ", Matched to"
+msgstr ""
+
+#: app/templates/fragments/settings/data.html:207
+msgid "existing audiobooks"
 msgstr ""
 
 #: app/templates/fragments/settings/data.html:210

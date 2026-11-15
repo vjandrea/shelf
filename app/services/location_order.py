@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from app import i18n
 from app.services import item_copies
 
 
@@ -80,7 +81,7 @@ def apply_copy_order(db, location_id: int, copy_ids: list[int]) -> None:
     }
     supplied = set(copy_ids)
     if len(copy_ids) != len(supplied) or supplied != existing:
-        raise ValueError("Copy order must contain every copy in this location exactly once")
+        raise ValueError(i18n.gettext("Copy order must contain every copy in this location exactly once"))
     for position, copy_id in enumerate(copy_ids, start=1):
         item_copies.update_copy(
             db, copy_id, {"position_order": position},
@@ -136,7 +137,7 @@ _SORT_KEYS = {
 def auto_order_copies(db, location_id: int, sort_key: str) -> list[int]:
     """Order a shelf by a deterministic catalogue/media key."""
     if sort_key not in _SORT_KEYS:
-        raise ValueError("Unknown sort order")
+        raise ValueError(i18n.gettext("Unknown sort order"))
     rows = direct_copies(db, location_id)
     ids = [row["copy_id"] for row in sorted(rows, key=_SORT_KEYS[sort_key])]
     apply_copy_order(db, location_id, ids)

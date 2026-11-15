@@ -204,7 +204,7 @@
                                     <span>{{ _(', Restored:') }} <span x-text="importResult.restored"></span></span>
                                 </template>
                                 <template x-if="importResult.matched > 0">
-                                    <span>, Matched to <span x-text="importResult.matched" data-testid="csv-import-matched"></span> existing audiobooks</span>
+                                    <span>{{ _(', Matched to') }} <span x-text="importResult.matched" data-testid="csv-import-matched"></span> {{ _('existing audiobooks') }}</span>
                                 </template>
                                 <template x-if="importResult.trashed > 0">
                                     <span>{{ _(', To Trash:') }} <span x-text="importResult.trashed"></span></span>

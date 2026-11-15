@@ -17,6 +17,7 @@ from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request
 
+from app import i18n
 from app.auth import require_role
 from app.database import get_db
 from app.features import require_feature
@@ -41,7 +42,7 @@ def _optional_int(raw: str, name: str, *, minimum: int = 0) -> int | None:
 
 def _scope_args(scope: str, location_id: str) -> tuple[str, int | None]:
     if scope not in copy_labels.SCOPES:
-        raise HTTPException(status_code=400, detail="Unknown scope")
+        raise HTTPException(status_code=400, detail=i18n.gettext("Unknown scope"))
     loc = _optional_int(location_id, "location_id", minimum=1)
     return scope, loc
 
@@ -93,7 +94,7 @@ async def labels_assign(
 ):
     scope, loc = _scope_args(scope, location_id)
     if scope == "location" and loc is None:
-        raise HTTPException(status_code=400, detail="Choose a location")
+        raise HTTPException(status_code=400, detail=i18n.gettext("Choose a location"))
     with get_db() as db:
         # Before assign_codes' BEGIN IMMEDIATE: an invalid stored prefix logs,
         # and a log line under the write lock is five seconds and dropped (G3).
