@@ -6993,6 +6993,14 @@ msgstr ""
 msgid "Preferred language for Open Library title searches — browse search, CSV-import ISBN recovery, and shelf-photo intake."
 msgstr ""
 
+#: app/templates/fragments/settings/library.html:43
+msgid "Audible marketplace"
+msgstr ""
+
+#: app/templates/fragments/settings/library.html:51
+msgid "Used to look up audiobook covers and details by ASIN. A title your marketplace does not sell is reported as not in the catalogue."
+msgstr ""
+
 #: app/templates/fragments/settings/library.html:61
 msgid "Navigation"
 msgstr ""

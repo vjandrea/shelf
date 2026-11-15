@@ -968,7 +968,7 @@ msgstr "Questo elemento non ha un ASIN da cercare."
 #: app/routers/items_catalog.py:561
 #, python-format
 msgid "Not in the Audible catalogue for the %(region)s marketplace. Check Settings → Library → Audible marketplace."
-msgstr "Non è nel catalogo Audible del marketplace %(region)s. Controlla Impostazioni → Biblioteca → Audible marketplace."
+msgstr "Non è nel catalogo Audible del marketplace %(region)s. Controlla Impostazioni → Biblioteca → Marketplace Audible."
 
 #: app/routers/items_catalog.py:566
 msgid "The Audible catalogue is rate-limiting requests. Try again in a minute."
@@ -7010,6 +7010,14 @@ msgstr "Lingua di ricerca dei dati"
 #: app/templates/fragments/settings/library.html:40
 msgid "Preferred language for Open Library title searches — browse search, CSV-import ISBN recovery, and shelf-photo intake."
 msgstr "Lingua preferita per le ricerche per titolo su Open Library: ricerca in Sfoglia, recupero degli ISBN nell'importazione CSV e acquisizione da foto."
+
+#: app/templates/fragments/settings/library.html:43
+msgid "Audible marketplace"
+msgstr "Marketplace Audible"
+
+#: app/templates/fragments/settings/library.html:51
+msgid "Used to look up audiobook covers and details by ASIN. A title your marketplace does not sell is reported as not in the catalogue."
+msgstr "Serve a cercare copertine e dettagli degli audiolibri tramite ASIN. Un titolo che il tuo marketplace non vende risulta assente dal catalogo."
 
 #: app/templates/fragments/settings/library.html:61
 msgid "Navigation"
