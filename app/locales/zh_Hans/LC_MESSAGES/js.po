@@ -67,7 +67,7 @@ msgid "checked {date}"
 msgstr ""
 
 #: static/js/components-item.js:81 static/js/components-item.js:85
-#: static/js/components-item.js:154
+#: static/js/components-item.js:154 static/js/location-order.js:67
 msgid "Saving…"
 msgstr ""
 
@@ -271,6 +271,22 @@ msgstr ""
 
 #: static/js/item_edit.js:158
 msgid "That is not a valid UPC-A / EAN-13 retail barcode. Try again."
+msgstr ""
+
+#: static/js/location-order.js:32
+msgid "Order changed — save when ready."
+msgstr ""
+
+#: static/js/location-order.js:60
+msgid "Could not save shelf order"
+msgstr ""
+
+#: static/js/location-order.js:70
+msgid "Shelf order saved."
+msgstr ""
+
+#: static/js/location-order.js:81
+msgid "Ordering…"
 msgstr ""
 
 #: static/js/scan.js:28 static/js/scan.js:163 static/js/scan.js:165
@@ -588,5 +604,28 @@ msgstr ""
 
 #: static/js/store.js:367
 msgid "offline"
+msgstr ""
+
+#: static/js/wrapup.js:128
+msgid "Untitled"
+msgstr ""
+
+#: static/js/wrapup.js:205
+#, python-brace-format
+msgid "Finished in {period}"
+msgstr ""
+
+#: static/js/wrapup.js:205
+#, python-brace-format
+msgid "Added in {period}"
+msgstr ""
+
+#: static/js/wrapup.js:206
+#, python-brace-format
+msgid "Latest {shown} of {total}"
+msgstr ""
+
+#: static/js/wrapup.js:250
+msgid "This browser could not export the image."
 msgstr ""
 
