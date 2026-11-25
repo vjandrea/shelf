@@ -5312,7 +5312,7 @@ msgstr "duplicato"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "promoted"
-msgstr ""
+msgstr "ora posseduto"
 
 #: app/templates/fragments/recent_scans.html:2
 #: app/templates/fragments/scan_result.html:311
@@ -5321,7 +5321,7 @@ msgstr "ripristinato"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "checked_out"
-msgstr ""
+msgstr "prestato"
 
 #: app/templates/fragments/recent_scans.html:2
 #: app/templates/fragments/scan_result.html:315
@@ -5355,27 +5355,27 @@ msgstr "altrove"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "marked_read"
-msgstr ""
+msgstr "segnato come finito"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "not_found"
-msgstr ""
+msgstr "non trovato"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "not_owned"
-msgstr ""
+msgstr "non posseduto"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "already_checked_out"
-msgstr ""
+msgstr "già prestato"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "not_checked_out"
-msgstr ""
+msgstr "non prestato"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "in_trash"
-msgstr ""
+msgstr "nel cestino"
 
 #: app/templates/fragments/recent_scans.html:2
 #: app/templates/fragments/scan_result.html:328
@@ -5384,7 +5384,7 @@ msgstr "errore"
 
 #: app/templates/fragments/recent_scans.html:2
 msgid "periodical_confirm"
-msgstr ""
+msgstr "periodico da confermare"
 
 #: app/templates/fragments/recent_scans.html:32
 msgid "No recent activity for this mode."

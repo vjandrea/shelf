@@ -450,3 +450,11 @@ def test_buy_links_card_is_translated(admin_client):
     assert "Link di acquisto" in page and "Marketplace Amazon" in page
     refused = admin_client.post("/api/settings/buy-links", data={"buy_links_bookshop_id": "abc"})
     assert refused.json()["message"] == "L'ID di affiliazione Bookshop.org contiene solo cifre, al massimo 12"
+
+
+def test_recent_scan_words_are_translated_into_italian(admin_client, db):
+    db.execute("INSERT INTO scan_log (isbn, media_type, result) VALUES ('9780000000088', 'book', 'in_trash')")
+    db.commit()
+    admin_client.post("/api/account/language", data={"language": "it"})
+    page = admin_client.get("/api/recent-scans").text
+    assert "nel cestino" in page and "in_trash" not in page
